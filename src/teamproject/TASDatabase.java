@@ -6,27 +6,34 @@
 package teamproject;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Date;
+import java.sql.*;
 
 public class TASDatabase {
     
-    Connection connection = null;
+    Connection conn = null;
+    Statement stmt = null;
+    ResultSet result = null;
     
     
     
     public TASDatabase(){
+        
+        
+        
+        
         try{
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/TAS_FA18?user=tasuser&password=CS310&useSSL=false");
+           
+            
+            String url = "jdbc:mysql://localhost/tas";
+            String username = "tasuser";
+            String password = "CS310";
+            conn = DriverManager.getConnection(url,username,password);
+            stmt = conn.createStatement();
         }
         catch(Exception e){System.err.println(e.getMessage());}
     }
+    
+
     
     public void close(){
         
