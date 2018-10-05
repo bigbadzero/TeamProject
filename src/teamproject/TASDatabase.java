@@ -47,7 +47,7 @@ public class TASDatabase {
             if(conn != null)
                 conn.close();
         }
-        catch(Exception e){System.out.println(e.getMessage());}
+        catch(Exception e){System.err.println(e.getMessage());}
     }
     
     public Punch getPunch(int id){
@@ -86,13 +86,16 @@ public class TASDatabase {
             
             badge = new Badge(id, badgeDesc);
         }
-        catch(Exception e){System.out.println(e.getMessage());}
+        catch(Exception e){System.err.println(e.getMessage());}
         
         return badge;
     }
     public Shift getShift(int id){
         Shift shift = null;
-        
+        try{
+            
+        }
+        catch(Exception e){System.err.println(e.getMessage());}
         return shift;
     }
     public Shift getShift(Badge badge){
