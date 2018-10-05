@@ -12,6 +12,7 @@ public class TASDatabase {
     
     Connection conn = null;
     Statement stmt = null;
+    PreparedStatement pst = null;
     ResultSet result = null;
     
     
@@ -38,21 +39,7 @@ public class TASDatabase {
     public void close(){
         
     }
-    public Badge createBadge(){
-        Badge badge = null;
-        
-        return badge;
-    }
-    public Shift createShift(){
-        Shift shift = null;
-        
-        return shift;
-    }
-    public Punch createPunch(){
-        Punch punch = null;
-        
-        return punch;
-    }
+    
     public Punch getPunch(int id){
         Punch punch = null;
         
