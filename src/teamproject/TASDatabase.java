@@ -72,6 +72,9 @@ public class TASDatabase {
             
 
             punch = new Punch(badge,id, terminalId,ots,ptid);
+            
+            result.close();
+            pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
         
@@ -91,6 +94,9 @@ public class TASDatabase {
             String badgeDesc = result.getString("description");
             
             badge = new Badge(id, badgeDesc);
+            
+            result.close();
+            pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
         
@@ -122,7 +128,8 @@ public class TASDatabase {
             
             shift = new Shift(id,desc, start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
             
-            
+            result.close();
+            pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
         return shift;
@@ -141,6 +148,9 @@ public class TASDatabase {
         int shiftId = result.getInt("shiftid");
         
         shift = this.getShift(shiftId);
+        
+        result.close();
+        pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
         
