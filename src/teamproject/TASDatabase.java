@@ -38,6 +38,17 @@ public class TASDatabase {
     
     public void close(){
         
+        try{
+            if(result != null)
+                result.close();
+            if(stmt != null)
+                stmt.close();
+            if(pst != null)
+                pst.close();
+            if(conn != null)
+                conn.close();
+        }
+        catch(Exception e){System.out.println(e.getMessage());}
     }
     
     public Punch getPunch(int id){
