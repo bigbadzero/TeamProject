@@ -10,10 +10,10 @@ import java.sql.*;
 
 public class TASDatabase {
     
-    Connection conn = null;
-    Statement stmt = null;
-    PreparedStatement pst = null;
-    ResultSet result = null;
+    private Connection conn = null;
+    private Statement stmt = null;
+    
+    private ResultSet result = null;
     
     
     
@@ -43,8 +43,7 @@ public class TASDatabase {
                 result.close();
             if(stmt != null)
                 stmt.close();
-            if(pst != null)
-                pst.close();
+            
             if(conn != null)
                 conn.close();
         }
@@ -53,6 +52,34 @@ public class TASDatabase {
     
     public Punch getPunch(int id){
         Punch punch = null;
+        
+        try{
+            PreparedStatement pst = conn.prepareStatement("SELECT * FROM punch WHERE id=?;");
+            
+            pst.setInt(1,id);
+            
+            result = pst.executeQuery();
+            result.next();
+            
+            
+            String badgeId = result.getString("badgeid");
+            int terminalId = result.getInt("terminalid");
+            int punchTypeId = result.getInt("punchtypeid");
+            
+            pst = conn.prepareStatement("SELECT * FROM badge WHERE id=?;");
+            pst.setString(1,badgeId);
+            
+            result = pst.executeQuery();
+            result.next();
+            
+            String badgeDesc = result.getString("description");
+            
+            Badge badge = new Badge(badgeId, badgeDesc);
+            
+            punch = new Punch(badge, terminalId, punchTypeId);
+        }
+        catch(Exception e){System.err.println(e.getMessage());}
+        
         
         return punch;
     }

@@ -23,7 +23,7 @@ public class Punch {
         this.originalTimestamp = null;
         this.adjustedTimeStamp = null;
     }
-    
+      
     public String printOriginalTimestamp(){
         String output = "";
         
