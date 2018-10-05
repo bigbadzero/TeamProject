@@ -55,27 +55,16 @@ public class TASDatabase {
         
         try{
             PreparedStatement pst = conn.prepareStatement("SELECT * FROM punch WHERE id=?;");
-            
             pst.setInt(1,id);
             
             result = pst.executeQuery();
             result.next();
             
-            
             String badgeId = result.getString("badgeid");
             int terminalId = result.getInt("terminalid");
             int punchTypeId = result.getInt("punchtypeid");
-            
-            pst = conn.prepareStatement("SELECT * FROM badge WHERE id=?;");
-            pst.setString(1,badgeId);
-            
-            result = pst.executeQuery();
-            result.next();
-            
-            String badgeDesc = result.getString("description");
-            
-            Badge badge = new Badge(badgeId, badgeDesc);
-            
+            Badge badge = this.getBadge(badgeId);
+
             punch = new Punch(badge, terminalId, punchTypeId);
         }
         catch(Exception e){System.err.println(e.getMessage());}
@@ -85,6 +74,19 @@ public class TASDatabase {
     }
     public Badge getBadge(String id){
         Badge badge = null;
+        
+        try{
+            PreparedStatement pst = conn.prepareStatement("SELECT * FROM badge WHERE id=?;");
+            pst.setString(1,id);
+            
+            result = pst.executeQuery();
+            result.next();
+            
+            String badgeDesc = result.getString("description");
+            
+            badge = new Badge(id, badgeDesc);
+        }
+        catch(Exception e){System.out.println(e.getMessage());}
         
         return badge;
     }
