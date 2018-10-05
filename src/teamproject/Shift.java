@@ -6,22 +6,23 @@ package teamproject;
  */
 
 import java.sql.Time;
+import java.sql.Timestamp;
 
 public class Shift {
     private int id;
     private String description;
-    private Time start;
-    private Time stop;
+    private Timestamp start;
+    private Timestamp stop;
     private int interval;
     private int gracePeriod;
     private int dock;
-    private Time lunchStart;
-    private Time lunchStop;
+    private Timestamp lunchStart;
+    private Timestamp lunchStop;
     private int lunchLength;
     private int lunchDeduct;
     
     
-    public Shift(int id, String description, Time start, Time stop, int interval, int gracePeriod, int dock, Time lunchStart, Time lunchStop, int lunchLength, int lunchDeduct){
+    public Shift(int id, String description, Timestamp start, Timestamp stop, int interval, int gracePeriod, int dock, Timestamp lunchStart, Timestamp lunchStop,  int lunchDeduct){
         this.id = id;
         this.description = description;
         this.start = start;
@@ -31,7 +32,7 @@ public class Shift {
         this.dock = dock;
         this.lunchStart = lunchStart;
         this.lunchStop = lunchStop;
-        this.lunchLength = lunchLength;
+        this.lunchLength = 0;                       //Ask Snellen about Lunch Length
         this.lunchDeduct = lunchDeduct;
     }
     
@@ -49,11 +50,11 @@ public class Shift {
         return description;
     }
 
-    public Time getStart() {
+    public Timestamp getStart() {
         return start;
     }
 
-    public Time getStop() {
+    public Timestamp getStop() {
         return stop;
     }
 
@@ -69,11 +70,11 @@ public class Shift {
         return dock;
     }
 
-    public Time getLunchStart() {
+    public Timestamp getLunchStart() {
         return lunchStart;
     }
 
-    public Time getLunchStop() {
+    public Timestamp getLunchStop() {
         return lunchStop;
     }
 
@@ -93,11 +94,11 @@ public class Shift {
         this.description = description;
     }
 
-    public void setStart(Time start) {
+    public void setStart(Timestamp start) {
         this.start = start;
     }
 
-    public void setStop(Time stop) {
+    public void setStop(Timestamp stop) {
         this.stop = stop;
     }
 
@@ -113,11 +114,11 @@ public class Shift {
         this.dock = dock;
     }
 
-    public void setLunchStart(Time lunchStart) {
+    public void setLunchStart(Timestamp lunchStart) {
         this.lunchStart = lunchStart;
     }
 
-    public void setLunchStop(Time lunchStop) {
+    public void setLunchStop(Timestamp lunchStop) {
         this.lunchStop = lunchStop;
     }
 

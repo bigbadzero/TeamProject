@@ -23,6 +23,15 @@ public class Punch {
         this.originalTimestamp = null;
         this.adjustedTimeStamp = null;
     }
+    
+    public Punch(Badge badge,int id, int terminalId, Timestamp ots, int ptid ){
+        this.badge = badge;
+        this.id = id;
+        this.terminalId = terminalId;
+        this.punchTypeId = punchTypeId;
+        this.originalTimestamp = ots;
+        this.punchTypeId = ptid;
+    }
       
     public String printOriginalTimestamp(){
         String output = "";

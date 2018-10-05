@@ -54,18 +54,24 @@ public class TASDatabase {
         Punch punch = null;
         
         try{
-            PreparedStatement pst = conn.prepareStatement("SELECT * FROM punch WHERE id=?;");
+            PreparedStatement pst = conn.prepareStatement("SELECT *, UNIX_TIMESTAMP(originaltimestamp) AS ts FROM punch WHERE id = ?;");
             pst.setInt(1,id);
             
             result = pst.executeQuery();
             result.next();
             
             String badgeId = result.getString("badgeid");
+            
             int terminalId = result.getInt("terminalid");
-            int punchTypeId = result.getInt("punchtypeid");
+            int ptid = result.getInt("punchtypeid");
             Badge badge = this.getBadge(badgeId);
+            long ts = result.getLong("ts");
+            ts = ts*1000;
+            Timestamp ots = new Timestamp(ts);
+            
+            
 
-            punch = new Punch(badge, terminalId, punchTypeId);
+            punch = new Punch(badge,id, terminalId,ots,ptid);
         }
         catch(Exception e){System.err.println(e.getMessage());}
         
@@ -93,6 +99,29 @@ public class TASDatabase {
     public Shift getShift(int id){
         Shift shift = null;
         try{
+            PreparedStatement pst = conn.prepareStatement("SELECT description, `interval`, graceperiod, dock, lunchdeduct, "
+                    + "UNIX_TIMESTAMP(`start`) AS `start`, UNIX_TIMESTAMP(`stop`) AS `stop`, UNIX_TIMESTAMP(lunchstart) AS lunchstart, "
+                    + "UNIX_TIMESTAMP(lunchstop) AS lunchstop FROM shift WHERE id=?;");
+            pst.setInt(1, id);
+            
+            result = pst.executeQuery();
+            result.next();
+            
+            String desc = result.getString("description");
+            
+            
+            Timestamp start = new Timestamp(result.getLong("start") *1000);
+            Timestamp stop = new Timestamp(result.getLong("stop") *1000);
+            int interval = result.getInt("interval");
+            int gracePeriod = result.getInt("graceperiod");
+            int dock = result.getInt("dock");
+            Timestamp lunchStart = new Timestamp(result.getLong("lunchstart") *1000);
+            Timestamp lunchStop = new Timestamp(result.getLong("lunchstop") *1000);
+            //lunch length
+            int lunchDeduct = result.getInt("lunchdeduct");
+            
+            shift = new Shift(id,desc, start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
+            
             
         }
         catch(Exception e){System.err.println(e.getMessage());}
@@ -100,6 +129,20 @@ public class TASDatabase {
     }
     public Shift getShift(Badge badge){
         Shift shift = null;
+        try{
+        String badgeID = badge.getId();
+        
+        PreparedStatement pst = conn.prepareStatement("SELECT shiftid FROM employee WHERE badgeid =?;");
+        pst.setString(1, badgeID);
+        
+        result = pst.executeQuery();
+        result.next();
+        
+        int shiftId = result.getInt("shiftid");
+        
+        shift = this.getShift(shiftId);
+        }
+        catch(Exception e){System.err.println(e.getMessage());}
         
         return shift;
     }
