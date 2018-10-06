@@ -28,7 +28,7 @@ public class Punch {
         this.badge = badge;
         this.id = id;
         this.terminalId = terminalId;
-        this.punchTypeId = punchTypeId;
+        
         this.originalTimestamp = ots;
         this.punchTypeId = ptid;
     }

@@ -7,6 +7,7 @@ package teamproject;
 
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 
 public class TASDatabase {
     
@@ -155,6 +156,38 @@ public class TASDatabase {
         catch(Exception e){System.err.println(e.getMessage());}
         
         return shift;
+    }
+    public int insertPunch(Punch punch){
+        String badgeId = punch.getBadge().getId();
+        int terminalId = punch.getTerminalId();
+        Timestamp ots = punch.getOriginalTimestamp();
+        int ptid = punch.getPunchTypeId();
+        
+        try{
+            int punchId = 0;
+            int results = 0;
+            ResultSet keys;
+            String sql = "INSERT INTO punch (terminalid,badgeid,originaltimestamp,punchtypeid) VALUES (?,?,?,?);";
+            PreparedStatement pst = conn.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
+            
+            pst.setInt(1,terminalId);
+            pst.setString(2, badgeId);
+            pst.setString(3, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTime()));
+            pst.setInt(4,ptid);
+            
+            results = pst.executeUpdate();
+            
+            if(results == 1){
+                keys = pst.getGeneratedKeys();
+                if(keys.next()){
+                    punchId = keys.getInt(1);
+                    punch.setId(punchId);
+                }
+            }
+        }
+        catch(Exception e){System.err.println(e.getMessage());}
+        
+        return punch.getId();
     }
     
 }
