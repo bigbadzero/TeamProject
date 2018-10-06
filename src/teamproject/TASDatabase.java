@@ -8,6 +8,8 @@ package teamproject;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 public class TASDatabase {
     
@@ -188,6 +190,30 @@ public class TASDatabase {
         catch(Exception e){System.err.println(e.getMessage());}
         
         return punch.getId();
+    }
+    public ArrayList getDailyPunchList(Badge b, long ts){
+        ArrayList<Punch> punchList = new ArrayList();
+        
+        String badgeId = b.getId();
+        Timestamp timestamp = new Timestamp(ts*1000);
+        String date = new SimpleDateFormat("yyyy,MM-dd").format(timestamp);
+        
+        try{
+            PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?%;");
+            pst.setString(1, badgeId);
+            pst.setString(2, date); 
+            
+            result = pst.executeQuery();
+            
+            while(result.next()){
+                int punchId = result.getInt("id");
+                Punch punch = this.getPunch(punchId);
+                punchList.add(punch);
+            }
+        }
+        catch(Exception e){System.err.println(e.getMessage());}
+        
+        return punchList;
     }
     
 }
