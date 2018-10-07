@@ -14,7 +14,8 @@ public class Badge {
     }
     
     public String toString(){
-        String output = "";
+        String output = "#" + id + " ";
+        output += "(" + description + ")";
         
         return output;
     }

@@ -34,7 +34,8 @@ public class Punch {
     }
       
     public String printOriginalTimestamp(){
-        String output = "";
+        String output = "#" + badge.getId() + " ";
+        
         
         return output;
     }
