@@ -7,8 +7,12 @@ package teamproject;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 public class Shift {
+    
+    public static final String TIME_FORMAT = "HH:mm";
+    
     private int id;
     private String description;
     private Timestamp start;
@@ -37,7 +41,24 @@ public class Shift {
     }
     
     public String toString(){
-        String output = "";
+        
+        long start = this.start.getTime();
+        long stop = this.stop.getTime();
+        long difference = (stop - start)/60000;
+        
+        long lunchStart = this.lunchStart.getTime();
+        long lunchStop = this.lunchStop.getTime();
+        long lunchDiff = (lunchStop - lunchStart)/60000;
+        
+        String startHour = (new SimpleDateFormat(TIME_FORMAT)).format(start);
+        String stopHour = (new SimpleDateFormat(TIME_FORMAT)).format(stop);
+        String lunchStartHour = (new SimpleDateFormat(TIME_FORMAT)).format(lunchStart);
+        String lunchStopHour = (new SimpleDateFormat(TIME_FORMAT)).format(lunchStop);
+        
+        String output = description + ": " ;
+        output += startHour + " - " + stopHour;
+        output += " (" + difference + " minutes); ";
+        output += "Lunch: " + lunchStartHour + " - " + lunchStopHour + " (" + lunchDiff + " minutes)";
         
         return output;
     }

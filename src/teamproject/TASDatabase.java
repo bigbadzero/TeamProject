@@ -67,8 +67,9 @@ public class TASDatabase {
             
             int terminalId = result.getInt("terminalid");
             int ptid = result.getInt("punchtypeid");
-            Badge badge = this.getBadge(badgeId);
             long ts = result.getLong("ts");
+            Badge badge = this.getBadge(badgeId);
+            
             ts = ts*1000;
             Timestamp ots = new Timestamp(ts);
             
