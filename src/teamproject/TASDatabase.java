@@ -197,7 +197,7 @@ public class TASDatabase {
         
         String badgeId = b.getId();
         Timestamp timestamp = new Timestamp(ts*1000);
-        String date = new SimpleDateFormat("yyyy,MM-dd").format(timestamp);
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
         
         try{
             PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?%;");
