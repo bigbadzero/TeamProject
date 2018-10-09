@@ -188,10 +188,12 @@ public class TASDatabase {
         Timestamp timestamp = new Timestamp(ts*1000);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
         
+        System.out.println(date);
+        
         try{
-            PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?%;");
+            PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;");
             pst.setString(1, badgeId);
-            pst.setString(2, date); 
+            pst.setString(2, date +"%"); 
             
             ResultSet result = pst.executeQuery();
             

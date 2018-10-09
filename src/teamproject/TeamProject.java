@@ -9,6 +9,10 @@ package teamproject;
  *
  * @author bwats
  */
+import java.util.ArrayList;
+import java.sql.Timestamp;
+import java.util.GregorianCalendar;
+
 public class TeamProject {
 
     /**
@@ -17,11 +21,11 @@ public class TeamProject {
     public static void main(String[] args) {
         // TODO code application logic here
         
+        
+        
         TASDatabase db = new TASDatabase();
         
-       Shift s = db.getShift(1);
-       
-       System.out.println(s);
+        
     }
     
 }
