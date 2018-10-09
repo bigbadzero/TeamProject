@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 public class Shift {
     
     public static final String TIME_FORMAT = "HH:mm";
+    public static final int MILLIS_TO_MIN = 60000;
     
     private int id;
     private String description;
@@ -44,11 +45,11 @@ public class Shift {
         
         long start = this.start.getTime();
         long stop = this.stop.getTime();
-        long difference = (stop - start)/60000;
+        long difference = (stop - start)/MILLIS_TO_MIN;
         
         long lunchStart = this.lunchStart.getTime();
         long lunchStop = this.lunchStop.getTime();
-        long lunchDiff = (lunchStop - lunchStart)/60000;
+        long lunchDiff = (lunchStop - lunchStart)/MILLIS_TO_MIN;
         
         String startHour = (new SimpleDateFormat(TIME_FORMAT)).format(start);
         String stopHour = (new SimpleDateFormat(TIME_FORMAT)).format(stop);

@@ -14,16 +14,8 @@ import java.util.GregorianCalendar;
 public class TASDatabase {
     
     private Connection conn = null;
-    private Statement stmt = null;
-    
-    private ResultSet result = null;
-    
-    
     
     public TASDatabase(){
-        
-        
-        
         
         try{
            
@@ -32,7 +24,6 @@ public class TASDatabase {
             String username = "tasuser";
             String password = "CS310";
             conn = DriverManager.getConnection(url,username,password);
-            stmt = conn.createStatement();
         }
         catch(Exception e){System.err.println(e.getMessage());}
     }
@@ -42,11 +33,6 @@ public class TASDatabase {
     public void close(){
         
         try{
-            if(result != null)
-                result.close();
-            if(stmt != null)
-                stmt.close();
-            
             if(conn != null)
                 conn.close();
         }
@@ -60,7 +46,7 @@ public class TASDatabase {
             PreparedStatement pst = conn.prepareStatement("SELECT *, UNIX_TIMESTAMP(originaltimestamp) AS ts FROM punch WHERE id = ?;");
             pst.setInt(1,id);
             
-            result = pst.executeQuery();
+            ResultSet result = pst.executeQuery();
             result.next();
             
             String badgeId = result.getString("badgeid");
@@ -77,7 +63,7 @@ public class TASDatabase {
 
             punch = new Punch(badge,id, terminalId,ots,ptid);
             
-            
+            result.close();
             pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
@@ -92,14 +78,14 @@ public class TASDatabase {
             PreparedStatement pst = conn.prepareStatement("SELECT * FROM badge WHERE id=?;");
             pst.setString(1,id);
             
-            result = pst.executeQuery();
+            ResultSet result = pst.executeQuery();
             result.next();
             
             String badgeDesc = result.getString("description");
             
             badge = new Badge(id, badgeDesc);
             
-            
+            result.close();;
             pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
@@ -114,7 +100,7 @@ public class TASDatabase {
                     + "UNIX_TIMESTAMP(lunchstop) AS lunchstop FROM shift WHERE id=?;");
             pst.setInt(1, id);
             
-            result = pst.executeQuery();
+            ResultSet result = pst.executeQuery();
             result.next();
             
             String desc = result.getString("description");
@@ -132,10 +118,11 @@ public class TASDatabase {
             
             shift = new Shift(id,desc, start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
             
-            
+            result.close();
             pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
+        
         return shift;
     }
     public Shift getShift(Badge badge){
@@ -146,14 +133,14 @@ public class TASDatabase {
         PreparedStatement pst = conn.prepareStatement("SELECT shiftid FROM employee WHERE badgeid =?;");
         pst.setString(1, badgeID);
         
-        result = pst.executeQuery();
+        ResultSet result = pst.executeQuery();
         result.next();
         
         int shiftId = result.getInt("shiftid");
         
         shift = this.getShift(shiftId);
         
-        
+        result.close();
         pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
@@ -187,6 +174,8 @@ public class TASDatabase {
                     punch.setId(punchId);
                 }
             }
+            
+            pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
         
@@ -204,13 +193,16 @@ public class TASDatabase {
             pst.setString(1, badgeId);
             pst.setString(2, date); 
             
-            result = pst.executeQuery();
+            ResultSet result = pst.executeQuery();
             
             while(result.next()){
                 int punchId = result.getInt("id");
                 Punch punch = this.getPunch(punchId);
                 punchList.add(punch);
             }
+            
+            result.close();
+            pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
         
