@@ -6,6 +6,7 @@ package teamproject;
  */
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.sql.Time;
 
 public class Punch {
     
@@ -14,6 +15,8 @@ public class Punch {
     public final static int CLOCKED_IN = 1;
     public final static int TIMED_OUT = 2;
     
+    public final static int SUN = 0;
+    public final static int SAT = 6;
     
     public static final String[] PUNCH_TYPES = { "CLOCKED OUT","CLOCKED IN", "TIMED OUT"}; 
     public static final String[] DAYS_OF_WEEK = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
@@ -25,6 +28,7 @@ public class Punch {
     private Timestamp originalTimestamp;
     private Timestamp adjustedTimestamp;
     private int punchTypeId;
+    private String eventData;
     
     public Punch(Badge badge, int terminalId, int punchTypeId ){
         this.badge = badge;
@@ -43,6 +47,66 @@ public class Punch {
         
         this.originalTimestamp = ots;
         this.punchTypeId = ptid;
+    }
+    
+    public void adjust(Shift s){
+        
+        Time ots = new Time(originalTimestamp.getHours(),originalTimestamp.getMinutes(),originalTimestamp.getSeconds());
+        int day = originalTimestamp.getDay();
+
+        Time shiftStart = new Time(s.getStart().getHours(),s.getStart().getMinutes(),s.getStart().getSeconds());
+        Time shiftStop = new Time(s.getStop().getHours(),s.getStop().getMinutes(),s.getStart().getSeconds());
+        Time lunchStart = new Time(s.getLunchStart().getHours(),s.getLunchStart().getMinutes(),s.getLunchStart().getSeconds());;
+        Time lunchStop = new Time(s.getLunchStop().getHours(),s.getLunchStop().getMinutes(),s.getLunchStop().getSeconds());
+        int interval = s.getInterval() * Shift.MILLIS_TO_MIN;
+        int gracePeriod = s.getGracePeriod() * Shift.MILLIS_TO_MIN;
+        int dock = s.getDock() * Shift.MILLIS_TO_MIN;
+        String eventData;
+        
+        Time shiftStartEarly = new Time(shiftStart.getTime() - interval);
+        Time shiftStartLate = new Time(shiftStart.getTime() + interval);
+        Time shiftStartGracePeriod = new Time(shiftStart.getTime() + gracePeriod);
+        
+        Time shiftStopEarly = new Time(shiftStop.getTime() - interval);
+        Time shiftStopLate = new Time(shiftStop.getTime() + interval);
+        Time shiftStopGracePeriod = new Time(shiftStop.getTime() - gracePeriod);
+
+        if((day == this.SUN) || (day == this.SAT)){
+            
+        }
+        else{
+            if((ots.after(shiftStartEarly) && ots.before(shiftStartLate)) || (ots.equals(shiftStartEarly)) || (ots.equals(shiftStartLate))){
+                if(ots.before(shiftStart)){
+                    adjustedTimestamp = originalTimestamp;
+                    adjustedTimestamp.setHours(shiftStart.getHours());
+                    adjustedTimestamp.setMinutes(shiftStart.getMinutes());
+                    adjustedTimestamp.setSeconds(shiftStart.getSeconds());
+                    
+                    eventData = "Shift Start";
+                }
+                else{
+                    if(ots.before(shiftStartGracePeriod) || ots.equals(shiftStartGracePeriod)){
+                        adjustedTimestamp = originalTimestamp;
+                        adjustedTimestamp.setHours(shiftStart.getHours());
+                        adjustedTimestamp.setMinutes(shiftStart.getMinutes());
+                        adjustedTimestamp.setSeconds(shiftStart.getSeconds());
+                    
+                        eventData = "Shift Start";
+                    }
+                    else{
+                        adjustedTimestamp = originalTimestamp;
+                        adjustedTimestamp.setHours(shiftStartLate.getHours());
+                        adjustedTimestamp.setMinutes(shiftStartLate.getMinutes());
+                        adjustedTimestamp.setSeconds(shiftStartLate.getSeconds());
+                    
+                        eventData = "Dock";
+                    }
+                }
+            }
+            
+            
+        }
+        
     }
       
     public String printOriginalTimestamp(){

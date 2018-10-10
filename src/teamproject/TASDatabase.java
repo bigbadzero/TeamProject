@@ -80,12 +80,12 @@ public class TASDatabase {
             
             ResultSet result = pst.executeQuery();
             result.next();
-            
+                       
             String badgeDesc = result.getString("description");
             
             badge = new Badge(id, badgeDesc);
             
-            result.close();;
+            result.close();
             pst.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
@@ -193,7 +193,7 @@ public class TASDatabase {
         try{
             PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;");
             pst.setString(1, badgeId);
-            pst.setString(2, date +"%"); 
+            pst.setString(2, date + "%"); 
             
             ResultSet result = pst.executeQuery();
             
