@@ -25,14 +25,7 @@ public class TeamProject {
         
         TASDatabase db = new TASDatabase();
         
-        Shift s = db.getShift(1);
         
-        
-        Punch p = db.getPunch(150);
-        
-        p.adjust(s);
-        
-        System.out.println(p.getAdjustedTimestamp());
         
         
     }

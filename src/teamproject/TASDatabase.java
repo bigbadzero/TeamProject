@@ -149,9 +149,9 @@ public class TASDatabase {
     }
     public int insertPunch(Punch punch){
         String badgeId = punch.getBadge().getId();
-        int terminalId = punch.getTerminalId();
-        Timestamp ots = punch.getOriginalTimestamp();
-        int ptid = punch.getPunchTypeId();
+        int terminalId = punch.getTerminalid();
+        Timestamp ots = punch.getOriginaltimestamp();
+        int ptid = punch.getPunchtypeid();
         
         try{
             int punchId = 0;

@@ -265,29 +265,29 @@ public class Punch {
         return id;
     }
 
-    public int getTerminalId() {
+    public int getTerminalid() {
         return terminalId;
     }
 
     public Badge getBadge() {
         return badge;
     }
-    public String getBadgeId(){
+    public String getBadgeid(){
         return this.badge.getId();
     }
     public String getBadgeDesc(){
         return this.badge.getDescription();
     }
 
-    public Timestamp getOriginalTimestamp() {
+    public Timestamp getOriginaltimestamp() {
         return originalTimestamp;
     }
 
-    public Timestamp getAdjustedTimestamp() {
+    public Timestamp getAdjustedtimestamp() {
         return adjustedTimestamp;
     }
 
-    public int getPunchTypeId() {
+    public int getPunchtypeid() {
         return punchTypeId;
     }
 
@@ -295,7 +295,7 @@ public class Punch {
         this.id = id;
     }
 
-    public void setTerminalId(int terminalId) {
+    public void setTerminalid(int terminalId) {
         this.terminalId = terminalId;
     }
 
@@ -303,15 +303,15 @@ public class Punch {
         this.badge = badge;
     }
 
-    public void setOriginalTimestamp(Timestamp originalTimestamp) {
+    public void setOriginaltimestamp(Timestamp originalTimestamp) {
         this.originalTimestamp = originalTimestamp;
     }
 
-    public void setAdjustedTimestamp(Timestamp adjustedTimeStamp) {
+    public void setAdjustedtimestamp(Timestamp adjustedTimeStamp) {
         this.adjustedTimestamp = adjustedTimeStamp;
     }
 
-    public void setPunchTypeId(int punchTypeId) {
+    public void setPunchtypeid(int punchTypeId) {
         this.punchTypeId = punchTypeId;
     }
     
