@@ -73,28 +73,70 @@ public class Punch {
 
         if((day == this.SUN) || (day == this.SAT)){
             
+            /*
+            Punch Occurs on a Weekend and Does Not Pertain to a Rule Set.
+            Punch Will be Adjusted to the Closest Interval
+            */
+            
+            Time nearestBefore = new Time(ots.getHours(),0,0);
+            Time nearestAfter = new Time(nearestBefore.getTime() + interval);
+            
+            while(nearestAfter.before(ots)){
+                nearestBefore.setMinutes(nearestBefore.getMinutes() + interval);
+                nearestAfter.setMinutes(nearestAfter.getMinutes() + interval);
+            }
+            
+            long beforeDiff = ots.getTime() - nearestBefore.getTime();
+            long afterDiff = nearestAfter.getTime() - ots.getTime();
+            
+            if(beforeDiff < afterDiff){
+                adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                adjustedTimestamp.setHours(nearestBefore.getHours());
+                adjustedTimestamp.setMinutes(nearestBefore.getMinutes());
+                adjustedTimestamp.setSeconds(nearestBefore.getSeconds());
+                
+                eventData = "None";
+            }
+            else{
+                adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                adjustedTimestamp.setHours(nearestAfter.getHours());
+                adjustedTimestamp.setMinutes(nearestAfter.getMinutes());
+                adjustedTimestamp.setSeconds(nearestAfter.getSeconds());
+                
+                eventData = "None";
+            }
+            
         }
         else{
+            
+            /*
+            Punch Occurs on a Weekday and Either Falls Within a Rule Set or
+            Will be Rounded to the Nearest Interval
+            */
+            
             if((ots.after(shiftStartEarly) && ots.before(shiftStartLate)) || (ots.equals(shiftStartEarly)) || (ots.equals(shiftStartLate))){
-                if(ots.before(shiftStart)){
-                    adjustedTimestamp = originalTimestamp;
+                
+                //Punch Occurs Within the Shift Start Period
+                
+                if(ots.before(shiftStart)){     //Punch is in the Early Interval
+                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
                     adjustedTimestamp.setHours(shiftStart.getHours());
                     adjustedTimestamp.setMinutes(shiftStart.getMinutes());
                     adjustedTimestamp.setSeconds(shiftStart.getSeconds());
                     
-                    eventData = "Shift Start";
+                    eventData = "Interval Round";
                 }
-                else{
-                    if(ots.before(shiftStartGracePeriod) || ots.equals(shiftStartGracePeriod)){
-                        adjustedTimestamp = originalTimestamp;
+                else{   //Punch is in the Late Interval
+                    if(ots.before(shiftStartGracePeriod) || ots.equals(shiftStartGracePeriod)){     //Punch is Within the Grace Period
+                        adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
                         adjustedTimestamp.setHours(shiftStart.getHours());
                         adjustedTimestamp.setMinutes(shiftStart.getMinutes());
                         adjustedTimestamp.setSeconds(shiftStart.getSeconds());
                     
                         eventData = "Shift Start";
                     }
-                    else{
-                        adjustedTimestamp = originalTimestamp;
+                    else{   //Punch is Late and Will be Docked
+                        adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
                         adjustedTimestamp.setHours(shiftStartLate.getHours());
                         adjustedTimestamp.setMinutes(shiftStartLate.getMinutes());
                         adjustedTimestamp.setSeconds(shiftStartLate.getSeconds());
@@ -103,6 +145,103 @@ public class Punch {
                     }
                 }
             }
+            else if((ots.after(shiftStopEarly)  && ots.before(shiftStopLate)) || (ots.equals(shiftStopEarly)) || (ots.equals(shiftStopLate))){
+                
+                //Punch Occurs Within the Shift Stop Period
+                
+                if(ots.after(shiftStop)){   //Punch is in the Late Interval
+                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    adjustedTimestamp.setHours(shiftStop.getHours());
+                    adjustedTimestamp.setMinutes(shiftStop.getMinutes());
+                    adjustedTimestamp.setSeconds(shiftStop.getSeconds());
+                    
+                    eventData = "Interval Round";
+                }
+                else{   //Punch is in the Early Interval
+                    if((ots.after(shiftStopGracePeriod)) || ots.equals(shiftStopGracePeriod)){  //Punch is Within the Grace Period
+                        adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                        adjustedTimestamp.setHours(shiftStop.getHours());
+                        adjustedTimestamp.setMinutes(shiftStop.getMinutes());
+                        adjustedTimestamp.setSeconds(shiftStop.getSeconds());
+                    
+                        eventData = "Shift Stop";
+                    }
+                    else{   //Punch-Out is Early and is Docked
+                        adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                        adjustedTimestamp.setHours(shiftStopEarly.getHours());
+                        adjustedTimestamp.setMinutes(shiftStopEarly.getMinutes());
+                        adjustedTimestamp.setSeconds(shiftStopEarly.getSeconds());
+                    
+                        eventData = "Shift Dock";
+                    }
+                }
+            }
+            else if((ots.after(lunchStart) && ots.before(lunchStop)) || (ots.equals(lunchStart)) || (ots.equals(lunchStop))){
+                
+                //Punch Occurs Within the Lunch Period
+                
+                if(ots.equals(lunchStart)){     
+                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    eventData = "Lunch Start";
+                }
+                else if(ots.equals(lunchStop)){
+                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    eventData = "Lunch Stop";
+                }
+                else{    
+                    if(punchTypeId == CLOCKED_OUT){     //Punch is a Clock-Out and is Pushed Back to Lunch Start
+                        adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                        adjustedTimestamp.setHours(lunchStart.getHours());
+                        adjustedTimestamp.setMinutes(lunchStart.getMinutes());
+                        adjustedTimestamp.setSeconds(lunchStart.getSeconds());
+                    
+                        eventData = "Lunch Start";
+                    }
+                    else{   //Punch is a Clock-In and is Pushed Back to Lunch Stop
+                        adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                        adjustedTimestamp.setHours(lunchStop.getHours());
+                        adjustedTimestamp.setMinutes(lunchStop.getMinutes());
+                        adjustedTimestamp.setSeconds(lunchStop.getSeconds());
+                    
+                        eventData = "Lunch Stop";
+                    }
+                }
+                
+            }
+            else{
+                
+                //Punch Does Not Occur Within a Designated Rule Set
+                //and is Set to the Nearest Interval
+                
+                Time nearestBefore = new Time(ots.getHours(),0,0);
+                Time nearestAfter = new Time(nearestBefore.getTime() + interval);
+
+                while(nearestAfter.before(ots)){
+                    nearestBefore.setMinutes(nearestBefore.getMinutes() + interval);
+                    nearestAfter.setMinutes(nearestAfter.getMinutes() + interval);
+                }
+
+                long beforeDiff = ots.getTime() - nearestBefore.getTime();
+                long afterDiff = nearestAfter.getTime() - ots.getTime();
+
+                if(beforeDiff < afterDiff){
+                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    adjustedTimestamp.setHours(nearestBefore.getHours());
+                    adjustedTimestamp.setMinutes(nearestBefore.getMinutes());
+                    adjustedTimestamp.setSeconds(nearestBefore.getSeconds());
+
+                    eventData = "None";
+                }
+                else{
+                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    adjustedTimestamp.setHours(nearestAfter.getHours());
+                    adjustedTimestamp.setMinutes(nearestAfter.getMinutes());
+                    adjustedTimestamp.setSeconds(nearestAfter.getSeconds());
+
+                    eventData = "None";
+                }
+            }
+            
             
             
         }
@@ -132,6 +271,12 @@ public class Punch {
 
     public Badge getBadge() {
         return badge;
+    }
+    public String getBadgeId(){
+        return this.badge.getId();
+    }
+    public String getBadgeDesc(){
+        return this.badge.getDescription();
     }
 
     public Timestamp getOriginalTimestamp() {
