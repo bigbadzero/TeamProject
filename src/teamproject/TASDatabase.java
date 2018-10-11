@@ -185,7 +185,7 @@ public class TASDatabase {
         ArrayList<Punch> punchList = new ArrayList();
         
         String badgeId = b.getId();
-        Timestamp timestamp = new Timestamp(ts*1000);
+        Timestamp timestamp = new Timestamp(ts);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
         
         System.out.println(date);

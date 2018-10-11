@@ -21,8 +21,10 @@ public class Feature2 {
     public void testInsertCheckPunch() {
 		
         /* Create New Punch Object */
+        
+        Badge b = db.getBadge("021890C0");
 
-        Punch p1 = new Punch("021890C0", 101, 1);
+        Punch p1 = new Punch(b, 101, 1);
         
         /* Create Timestamp Objects */
         
@@ -33,7 +35,7 @@ public class Feature2 {
         
         String badgeid = p1.getBadgeid();
         
-        ots.setTimeInMillis(p1.getOriginaltimestamp());
+        ots.setTimeInMillis(p1.getOriginaltimestamp().getTime());
         String originaltimestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTime());
         
         int terminalid = p1.getTerminalid();
@@ -51,7 +53,7 @@ public class Feature2 {
 
         assertEquals(badgeid, p2.getBadgeid());
 
-        rts.setTimeInMillis(p2.getOriginaltimestamp());
+        rts.setTimeInMillis(p2.getOriginaltimestamp().getTime());
         
         assertEquals(originaltimestamp, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rts.getTime()));
         assertEquals(terminalid, p2.getTerminalid());
