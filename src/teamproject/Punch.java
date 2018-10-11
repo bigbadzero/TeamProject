@@ -7,6 +7,7 @@ package teamproject;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.sql.Time;
+import java.util.GregorianCalendar;
 
 public class Punch {
     
@@ -36,7 +37,8 @@ public class Punch {
         this.punchTypeId = punchTypeId;
         
         this.id = 0;
-        this.originalTimestamp = null;
+        GregorianCalendar gc = new GregorianCalendar();
+        this.originalTimestamp = new Timestamp(gc.getTimeInMillis());
         this.adjustedTimestamp = null;
     }
     
@@ -259,6 +261,12 @@ public class Punch {
         
         
         return output;
+    }
+    
+    public String getOriginalformatteddate(){
+        String date = (new SimpleDateFormat(DATE_FORMAT)).format(originalTimestamp);
+        
+        return date;
     }
 
     public int getId() {

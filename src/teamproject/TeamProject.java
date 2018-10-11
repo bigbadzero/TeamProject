@@ -25,7 +25,11 @@ public class TeamProject {
         
         TASDatabase db = new TASDatabase();
         
+        Badge b = db.getBadge("021890C0");
+
+        Punch p1 = new Punch(b, 101, 1);
         
+        System.out.println(p1.getOriginalformatteddate());
         
         
     }
