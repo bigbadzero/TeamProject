@@ -84,8 +84,11 @@ public class Punch {
             Time nearestAfter = new Time(nearestBefore.getTime() + interval);
             
             while(nearestAfter.before(ots)){
-                nearestBefore.setMinutes(nearestBefore.getMinutes() + interval);
-                nearestAfter.setMinutes(nearestAfter.getMinutes() + interval);
+                
+                nearestBefore.setTime(nearestBefore.getTime() + interval);
+                nearestAfter.setTime(nearestAfter.getTime() + interval);
+                
+                
             }
             
             long beforeDiff = ots.getTime() - nearestBefore.getTime();
@@ -219,8 +222,8 @@ public class Punch {
                 Time nearestAfter = new Time(nearestBefore.getTime() + interval);
 
                 while(nearestAfter.before(ots)){
-                    nearestBefore.setMinutes(nearestBefore.getMinutes() + interval);
-                    nearestAfter.setMinutes(nearestAfter.getMinutes() + interval);
+                    nearestBefore.setTime(nearestBefore.getTime() + interval);
+                    nearestAfter.setTime(nearestAfter.getTime() + interval);
                 }
 
                 long beforeDiff = ots.getTime() - nearestBefore.getTime();
@@ -255,6 +258,17 @@ public class Punch {
         String pt = this.PUNCH_TYPES[punchTypeId];
         String dow = this.DAYS_OF_WEEK[originalTimestamp.getDay()];
         String date = (new SimpleDateFormat(DATE_FORMAT)).format(originalTimestamp);
+        
+        String output = "#" + badge.getId() + " ";
+        output+= pt + ": " + dow + " " + date;
+        
+        
+        return output;
+    }
+    public String printAdjustedTimestamp(){
+        String pt = this.PUNCH_TYPES[punchTypeId];
+        String dow = this.DAYS_OF_WEEK[adjustedTimestamp.getDay()];
+        String date = (new SimpleDateFormat(DATE_FORMAT)).format(adjustedTimestamp);
         
         String output = "#" + badge.getId() + " ";
         output+= pt + ": " + dow + " " + date;
