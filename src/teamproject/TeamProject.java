@@ -25,19 +25,31 @@ public class TeamProject {
         
         TASDatabase db = new TASDatabase();
         
-        Badge b = db.getBadge("021890C0");
+        Badge b = db.getBadge("4E6E296E");
         
         
-        Timestamp clock = new Timestamp(118,7,7,7,15,1,0);
+        Timestamp clock = new Timestamp(118,7,1,7,15,1,0);
         
         Punch p1 = new Punch(b, 101, 1,clock,Punch.CLOCKED_OUT);
         
-        Shift s = db.getShift(4);
+        Shift s = db.getShift(1);
         
         p1.adjust(s);
         
-        System.out.println(p1.printOriginalTimestamp());
-        System.out.println(p1.printAdjustedTimestamp());
+        
+        
+        
+        ArrayList<Punch> punchList = db.getDailyPunchList(b, clock.getTime());
+        
+        for(Punch p: punchList){
+            
+            p.adjust(s);
+            
+            System.out.println(p.printOriginalTimestamp());
+            System.out.println(p.printAdjustedTimestamp());
+            System.out.println("___");
+            
+        }
         
         
     }

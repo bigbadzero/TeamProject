@@ -16,6 +16,14 @@ public class Punch {
     public final static int CLOCKED_IN = 1;
     public final static int TIMED_OUT = 2;
     
+    public final static String EVENT_DATA_SHIFT_START = "Shift Start";
+    public final static String EVENT_DATA_SHIFT_STOP = "Shift Stop";
+    public final static String EVENT_DATA_LUNCH_START = "Lunch Start";
+    public final static String EVENT_DATA_LUNCH_STOP = "Lunch Stop";
+    public final static String EVENT_DATA_SHIFT_DOCK = "Shift Dock";
+    public final static String EVENT_DATA_INTERVAL_ROUND = "Interval Round";
+    public final static String EVENT_DATA_NONE = "None";
+    
     public final static int SUN = 0;
     public final static int SAT = 6;
     
@@ -40,6 +48,8 @@ public class Punch {
         GregorianCalendar gc = new GregorianCalendar();
         this.originalTimestamp = new Timestamp(gc.getTimeInMillis());
         this.adjustedTimestamp = null;
+        this.eventData = "";
+        
     }
     
     public Punch(Badge badge,int id, int terminalId, Timestamp ots, int ptid ){
@@ -48,7 +58,9 @@ public class Punch {
         this.terminalId = terminalId;
         
         this.originalTimestamp = ots;
+        this.adjustedTimestamp = null;
         this.punchTypeId = ptid;
+        this.eventData = "";
     }
     
     public void adjust(Shift s){
@@ -311,6 +323,10 @@ public class Punch {
 
     public int getPunchtypeid() {
         return punchTypeId;
+    }
+    
+    public String getEventdata(){
+        return this.eventData;
     }
 
     public void setId(int id) {

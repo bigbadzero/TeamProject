@@ -159,18 +159,18 @@ public class TASDatabase {
             ResultSet keys;
             String sql = "INSERT INTO punch (terminalid,badgeid,originaltimestamp,punchtypeid) VALUES (?,?,?,?);";
             PreparedStatement pst = conn.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS);
-            
+                      
             pst.setInt(1,terminalId);
             pst.setString(2, badgeId);
             pst.setString(3, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTime()));
             pst.setInt(4,ptid);
             
             results = pst.executeUpdate();
-            
+                       
             if(results == 1){
                 keys = pst.getGeneratedKeys();
                 if(keys.next()){
-                    punchId = keys.getInt(1);
+                    punchId = keys.getInt("id");
                     punch.setId(punchId);
                 }
             }
@@ -188,8 +188,7 @@ public class TASDatabase {
         Timestamp timestamp = new Timestamp(ts);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
         
-        System.out.println(date);
-        
+  
         try{
             PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;");
             pst.setString(1, badgeId);
