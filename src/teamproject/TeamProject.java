@@ -24,5 +24,16 @@ public class TeamProject {
         
         Badge b = db.getBadge("4E6E296E");
         
+        
+        Shift s2 = db.getShift(2);
+
+        Punch p1 = db.getPunch(4943);
+        Punch p2 = db.getPunch(5004);
+		
+        /* Adjust Punches According to Shift Rulesets */
+        
+        p1.adjust(s2);
+        p2.adjust(s2);
+        
     }
 }
