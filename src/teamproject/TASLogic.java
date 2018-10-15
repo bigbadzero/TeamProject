@@ -10,6 +10,8 @@ package teamproject;
  * @author Brendan
  */
 import java.util.ArrayList;
+import java.util.HashMap;
+import org.json.simple.*;
 
 public class TASLogic {
     
@@ -41,5 +43,29 @@ public class TASLogic {
         }
         
         return minutes;
+    }
+    
+    public static String getPunchListAsJSON(ArrayList<Punch> dailypunchlist){
+        
+        ArrayList<HashMap<String, String>> jsonData = new ArrayList<>();
+        HashMap<String, String>  punchData = new HashMap<>();
+        int iteratorCounter = 0;
+        
+        for(int i = 0; i < dailypunchlist.size(); i++){
+            Punch punch = dailypunchlist.get(i);
+            
+            punchData.put("id", String.valueOf(punch.getId()));
+            punchData.put("badgeid", punch.getBadgeid());
+            punchData.put("terminalid", String.valueOf(punch.getTerminalid()));
+            punchData.put("eventtypeid",String.valueOf(punch.getPunchtypeid()));
+            punchData.put("eventdata", punch.getEventdata());
+            punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTime()));
+            
+            jsonData.add(punchData);
+            iteratorCounter++;
+        }
+        
+        String json = JSONValue.toJSONString(jsonData);
+        return json;
     }
 }

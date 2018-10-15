@@ -24,5 +24,8 @@ public class TeamProject {
         
         Badge b = db.getBadge("4E6E296E");
         
+        Punch p = db.getPunch(147);
+        ArrayList dailyPunches = db.getDailyPunchList(p.getBadge(), p.getOriginaltimestamp().getTime());
+        System.out.println(TASLogic.getPunchListAsJSON(dailyPunches));
     }
 }
