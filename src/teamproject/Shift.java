@@ -8,6 +8,7 @@ package teamproject;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.lang.Number;
 
 public class Shift {
     
@@ -37,8 +38,11 @@ public class Shift {
         this.dock = dock;
         this.lunchStart = lunchStart;
         this.lunchStop = lunchStop;
-        this.lunchLength = 0;                       //Ask Snellen about Lunch Length
         this.lunchDeduct = lunchDeduct;
+        
+        Long lunchLength = lunchStop.getTime() - lunchStart.getTime();
+        this.lunchLength = lunchLength.intValue();
+        
     }
     
     public String toString(){

@@ -10,20 +10,25 @@ package teamproject;
  * @author Brendan
  */
 import java.util.ArrayList;
+import java.lang.Number;
 
 public class TASLogic {
     
     
     
-    public static int calculateTotalMinutes(ArrayList<Punch> punchList){
-        int minutes = 0;
+    public static int calculateTotalMinutes(ArrayList<Punch> punchList,Shift shift){
+        Long totalMinutes = new Long(0);
         
         Punch punchIn = null;
         Punch punchOut = null;
         Punch lunchOut = null;
         Punch lunchIn = null;
         
+        int lunchDeduct = shift.getLunchDeduct();
+        int lunchLength = shift.getLunchLength();
+        
         for(Punch p: punchList){
+            p.adjust(shift);
             if(p.getPunchtypeid() == Punch.CLOCKED_IN){
                 if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_STOP))
                    lunchIn = p; 
@@ -40,6 +45,21 @@ public class TASLogic {
             }
         }
         
-        return minutes;
+        if(punchOut.getPunchtypeid() != Punch.TIMED_OUT){                
+            long punchInLong = punchIn.getAdjustedtimestamp().getTime();
+            long punchOutLong = punchOut.getAdjustedtimestamp().getTime();
+            
+            totalMinutes = punchOutLong - punchInLong; 
+            
+            if((lunchOut != null) && (lunchIn != null))
+                totalMinutes = totalMinutes - lunchLength;
+            
+            else{
+                if(totalMinutes >= lunchDeduct)
+                    totalMinutes = totalMinutes - lunchLength;   
+            }
+        }
+        
+        return totalMinutes.intValue();
     }
 }
