@@ -28,25 +28,21 @@ public class TASLogic {
         Punch lunchOut = null;
         Punch lunchIn = null;
         
-        for(Punch p: punchList){
+        for(Punch p: punchList)
             p.adjust(shift);
-            if(p.getPunchtypeid() == Punch.CLOCKED_IN){
-                if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_STOP))
-                   lunchIn = p; 
-                else{
-                    punchIn = p;
-                }   
-            }
-            if(p.getPunchtypeid() == Punch.CLOCKED_OUT){
-                if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_START))
-                    lunchOut = p;
-                else{
-                    punchOut = p;
-                }
-            }
+        
+        if(punchList.size() == 2){
+            punchIn = punchList.get(0);
+            punchOut = punchList.get(1);
         }
-        System.out.println(lunchDeduct);
-        System.out.println(lunchLength);
+        else if(punchList.size() == 4){
+            punchIn = punchList.get(0);
+            lunchOut = punchList.get(1);
+            lunchIn = punchList.get(2);
+            punchOut = punchList.get(3);
+        }
+        
+        
         System.out.println(punchIn.printAdjustedTimestamp());
         System.out.println(punchOut.printAdjustedTimestamp());
         System.out.println(lunchIn);
@@ -62,7 +58,6 @@ public class TASLogic {
                 totalMillis = totalMillis - (lunchLength * Shift.MILLIS_TO_MIN);
             }
             else{
-                System.out.println(totalMillis/Shift.MILLIS_TO_MIN);
                 if((totalMillis/Shift.MILLIS_TO_MIN) >= lunchDeduct){
                     totalMillis = totalMillis - (lunchLength * Shift.MILLIS_TO_MIN);
                 }
