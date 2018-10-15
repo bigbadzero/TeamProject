@@ -75,7 +75,7 @@ public class Punch {
         int interval = s.getInterval() * Shift.MILLIS_TO_MIN;
         int gracePeriod = s.getGracePeriod() * Shift.MILLIS_TO_MIN;
         int dock = s.getDock() * Shift.MILLIS_TO_MIN;
-        String eventData;
+        
         
         Time shiftStartEarly = new Time(shiftStart.getTime() - interval);
         Time shiftStartLate = new Time(shiftStart.getTime() + interval);
@@ -112,7 +112,7 @@ public class Punch {
                 adjustedTimestamp.setMinutes(nearestBefore.getMinutes());
                 adjustedTimestamp.setSeconds(nearestBefore.getSeconds());
                 
-                eventData = "None";
+                eventData = EVENT_DATA_INTERVAL_ROUND;
             }
             else{
                 adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
@@ -120,7 +120,7 @@ public class Punch {
                 adjustedTimestamp.setMinutes(nearestAfter.getMinutes());
                 adjustedTimestamp.setSeconds(nearestAfter.getSeconds());
                 
-                eventData = "None";
+                eventData = EVENT_DATA_INTERVAL_ROUND;
             }
             
         }
@@ -141,7 +141,7 @@ public class Punch {
                     adjustedTimestamp.setMinutes(shiftStart.getMinutes());
                     adjustedTimestamp.setSeconds(shiftStart.getSeconds());
                     
-                    eventData = "Interval Round";
+                    eventData = EVENT_DATA_SHIFT_START;
                 }
                 else{   //Punch is in the Late Interval
                     if(ots.before(shiftStartGracePeriod) || ots.equals(shiftStartGracePeriod)){     //Punch is Within the Grace Period
@@ -150,7 +150,7 @@ public class Punch {
                         adjustedTimestamp.setMinutes(shiftStart.getMinutes());
                         adjustedTimestamp.setSeconds(shiftStart.getSeconds());
                     
-                        eventData = "Shift Start";
+                        eventData = EVENT_DATA_SHIFT_START;
                     }
                     else{   //Punch is Late and Will be Docked
                         adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
@@ -158,7 +158,7 @@ public class Punch {
                         adjustedTimestamp.setMinutes(shiftStartLate.getMinutes());
                         adjustedTimestamp.setSeconds(shiftStartLate.getSeconds());
                     
-                        eventData = "Dock";
+                        eventData = EVENT_DATA_SHIFT_DOCK;
                     }
                 }
             }
@@ -172,7 +172,7 @@ public class Punch {
                     adjustedTimestamp.setMinutes(shiftStop.getMinutes());
                     adjustedTimestamp.setSeconds(shiftStop.getSeconds());
                     
-                    eventData = "Interval Round";
+                    eventData = EVENT_DATA_SHIFT_STOP;
                 }
                 else{   //Punch is in the Early Interval
                     if((ots.after(shiftStopGracePeriod)) || ots.equals(shiftStopGracePeriod)){  //Punch is Within the Grace Period
@@ -181,7 +181,7 @@ public class Punch {
                         adjustedTimestamp.setMinutes(shiftStop.getMinutes());
                         adjustedTimestamp.setSeconds(shiftStop.getSeconds());
                     
-                        eventData = "Shift Stop";
+                        eventData = EVENT_DATA_SHIFT_STOP;
                     }
                     else{   //Punch-Out is Early and is Docked
                         adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
@@ -189,7 +189,7 @@ public class Punch {
                         adjustedTimestamp.setMinutes(shiftStopEarly.getMinutes());
                         adjustedTimestamp.setSeconds(shiftStopEarly.getSeconds());
                     
-                        eventData = "Shift Dock";
+                        eventData = EVENT_DATA_SHIFT_DOCK;
                     }
                 }
             }
@@ -199,11 +199,11 @@ public class Punch {
                 
                 if(ots.equals(lunchStart)){     
                     adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
-                    eventData = "Lunch Start";
+                    eventData = EVENT_DATA_LUNCH_START;
                 }
                 else if(ots.equals(lunchStop)){
                     adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
-                    eventData = "Lunch Stop";
+                    eventData = EVENT_DATA_LUNCH_STOP;
                 }
                 else{    
                     if(punchTypeId == CLOCKED_OUT){     //Punch is a Clock-Out and is Pushed Back to Lunch Start
@@ -212,7 +212,7 @@ public class Punch {
                         adjustedTimestamp.setMinutes(lunchStart.getMinutes());
                         adjustedTimestamp.setSeconds(lunchStart.getSeconds());
                     
-                        eventData = "Lunch Start";
+                        eventData = EVENT_DATA_LUNCH_START;
                     }
                     else{   //Punch is a Clock-In and is Pushed Back to Lunch Stop
                         adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
@@ -220,7 +220,7 @@ public class Punch {
                         adjustedTimestamp.setMinutes(lunchStop.getMinutes());
                         adjustedTimestamp.setSeconds(lunchStop.getSeconds());
                     
-                        eventData = "Lunch Stop";
+                        eventData = EVENT_DATA_LUNCH_STOP;
                     }
                 }
                 
@@ -232,6 +232,8 @@ public class Punch {
                 
                 Time nearestBefore = new Time(ots.getHours(),0,0);
                 Time nearestAfter = new Time(nearestBefore.getTime() + interval);
+                
+                Time otsNoSecs = new Time(ots.getHours(),ots.getMinutes(),0);
 
                 while(nearestAfter.before(ots)){
                     nearestBefore.setTime(nearestBefore.getTime() + interval);
@@ -240,14 +242,19 @@ public class Punch {
 
                 long beforeDiff = ots.getTime() - nearestBefore.getTime();
                 long afterDiff = nearestAfter.getTime() - ots.getTime();
-
-                if(beforeDiff < afterDiff){
+               
+                if(otsNoSecs.equals(nearestBefore) || ots.equals(nearestAfter)){
+                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    eventData = EVENT_DATA_NONE;
+                }
+                
+               else if(beforeDiff < afterDiff){
                     adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
                     adjustedTimestamp.setHours(nearestBefore.getHours());
                     adjustedTimestamp.setMinutes(nearestBefore.getMinutes());
                     adjustedTimestamp.setSeconds(nearestBefore.getSeconds());
 
-                    eventData = "None";
+                    eventData = EVENT_DATA_INTERVAL_ROUND;
                 }
                 else{
                     adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
@@ -255,14 +262,10 @@ public class Punch {
                     adjustedTimestamp.setMinutes(nearestAfter.getMinutes());
                     adjustedTimestamp.setSeconds(nearestAfter.getSeconds());
 
-                    eventData = "None";
+                    eventData = EVENT_DATA_INTERVAL_ROUND;
                 }
-            }
-            
-            
-            
+            } 
         }
-        
     }
       
     public String printOriginalTimestamp(){
@@ -283,7 +286,8 @@ public class Punch {
         String date = (new SimpleDateFormat(DATE_FORMAT)).format(adjustedTimestamp);
         
         String output = "#" + badge.getId() + " ";
-        output+= pt + ": " + dow + " " + date;
+        output+= pt + ": " + dow + " " + date + " ";
+        output+= "(" + this.eventData + ")";
         
         
         return output;
