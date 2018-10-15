@@ -22,7 +22,7 @@ public class TeamProject {
         
         TASDatabase db = new TASDatabase();
         
-        Badge b = db.getBadge("4E6E296E");
+        Badge b = db.getBadge("CEBCC740");
         
         
         Shift s2 = db.getShift(2);
@@ -34,6 +34,15 @@ public class TeamProject {
         
         p1.adjust(s2);
         p2.adjust(s2);
+        
+        
+        Shift s1 = db.getShift(1);
+        GregorianCalendar gc = new GregorianCalendar(2018,7,1);
+        ArrayList<Punch> punchList = db.getDailyPunchList(b,gc.getTimeInMillis() );
+        
+        int mins = TASLogic.calculateTotalMinutes(punchList, s1);
+        
+        System.out.println(mins);
         
     }
 }
