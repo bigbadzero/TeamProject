@@ -92,7 +92,7 @@ public class Punch {
             */
             
             Timestamp nearestBefore = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),ots.getHours(),0,0,0);
-            Time nearestAfter = new Time(nearestBefore.getTime() + interval);
+            Timestamp nearestAfter = new Timestamp(nearestBefore.getTime() + interval);
             
             Timestamp otsNoSecs = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),ots.getHours(),ots.getMinutes(),0,0);
             
