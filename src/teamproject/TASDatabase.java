@@ -170,7 +170,7 @@ public class TASDatabase {
             if(results == 1){
                 keys = pst.getGeneratedKeys();
                 if(keys.next()){
-                    punchId = keys.getInt("id");
+                    punchId = keys.getInt(1);
                     punch.setId(punchId);
                 }
             }
