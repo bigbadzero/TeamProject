@@ -53,5 +53,13 @@ public class TeamProject {
         
         System.out.println(mins);
         
+        b = db.getBadge("021890C0");
+        gc = new GregorianCalendar(2018,8,12);
+        
+        punchList = db.getDailyPunchList(b, gc.getTimeInMillis());
+        
+        mins = TASLogic.calculateTotalMinutes(punchList, s1);
+        
+        System.out.println(mins);
     }
 }

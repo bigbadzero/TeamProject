@@ -17,56 +17,42 @@ public class TASLogic {
     
     
     public static int calculateTotalMinutes(ArrayList<Punch> punchList,Shift shift){
+        
+        /*
+        *Calculates the total minutes an employee work in a day
+        *Does the bulk of the calcualtion in terms of Milliseconds
+        *Before converting the total of milliseconds to minutes
+        */
+        
         int totalMinutes = 0;
         Long totalMillis = new Long(0);
+        Punch previous = null;
+        boolean lunchOut = false;
+        boolean lunchIn = false;
         
-        int lunchDeduct = shift.getLunchDeduct();
-        int lunchLength = shift.getLunchLength();
+        //convert instance fields of shift into milliseconds
+        long lunchDeduct = shift.getLunchDeduct() * Shift.MILLIS_TO_MIN;
+        long lunchLength = shift.getLunchLength() * Shift.MILLIS_TO_MIN;
         
-        Punch punchIn = null;
-        Punch punchOut = null;
-        Punch lunchOut = null;
-        Punch lunchIn = null;
-        
-        for(Punch p: punchList)
+        for(Punch p: punchList){
             p.adjust(shift);
-        
-        if(punchList.size() == 2){
-            punchIn = punchList.get(0);
-            punchOut = punchList.get(1);
+            
+            if(p.getPunchtypeid() == Punch.CLOCKED_IN)
+                previous = p;
+            else if(p.getPunchtypeid() == Punch.CLOCKED_OUT)
+                totalMillis += p.getAdjustedtimestamp().getTime() - previous.getAdjustedtimestamp().getTime();
+            
+            if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_START))
+                lunchOut = true;
+            else if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_STOP))
+                lunchIn = true;
         }
-        else if(punchList.size() == 4){
-            punchIn = punchList.get(0);
-            lunchOut = punchList.get(1);
-            lunchIn = punchList.get(2);
-            punchOut = punchList.get(3);
-        }
-        
-        
-        System.out.println(punchIn.printAdjustedTimestamp());
-        System.out.println(punchOut.printAdjustedTimestamp());
-        System.out.println(lunchIn);
-        System.out.println(lunchOut);
-        
-        if(punchOut.getPunchtypeid() != Punch.TIMED_OUT){
-            Long punchInMillis = punchIn.getAdjustedtimestamp().getTime();
-            Long punchOutMillis = punchOut.getAdjustedtimestamp().getTime();
-            
-            totalMillis = punchOutMillis - punchInMillis;
-            
-            if((lunchOut != null) && (lunchIn != null)){ 
-                totalMillis = totalMillis - (lunchLength * Shift.MILLIS_TO_MIN);
-            }
-            else{
-                if((totalMillis/Shift.MILLIS_TO_MIN) >= lunchDeduct){
-                    totalMillis = totalMillis - (lunchLength * Shift.MILLIS_TO_MIN);
-                }
-            }
-            
+        if(!lunchOut && !lunchIn){
+            if(totalMillis >= lunchDeduct)
+                totalMillis -= lunchLength;
         }
     
         totalMinutes = (new Long(totalMillis/Shift.MILLIS_TO_MIN)).intValue();
-        
         
         return totalMinutes;
     }
