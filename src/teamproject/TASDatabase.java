@@ -186,13 +186,18 @@ public class TASDatabase {
         
         String badgeId = b.getId();
         Timestamp timestamp = new Timestamp(ts);
+        Timestamp followingTimestamp = new Timestamp(timestamp.getTime() + 24*Shift.MILLIS_TO_HOURS);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+        String followingDate = new SimpleDateFormat("yyyy-MM-dd").format(followingTimestamp);
         
   
         try{
-            PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;");
+           // PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;");
+           PreparedStatement pst = conn.prepareStatement("SELECT * FROM punch WHERE badgeid = ? AND  ((originaltimestamp LIKE ?) OR (originaltimestamp LIKE ? AND punchtypeid = ?));");
             pst.setString(1, badgeId);
             pst.setString(2, date + "%"); 
+            pst.setString(3, followingDate);
+            pst.setInt(4, Punch.CLOCKED_OUT);
             
             ResultSet result = pst.executeQuery();
             

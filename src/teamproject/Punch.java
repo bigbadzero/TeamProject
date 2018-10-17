@@ -72,6 +72,11 @@ public class Punch {
         Timestamp shiftStop = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),s.getStop().getHours(),s.getStop().getMinutes(),s.getStop().getSeconds(),s.getStop().getNanos());
         Timestamp lunchStart = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),s.getLunchStart().getHours(),s.getLunchStart().getMinutes(),s.getLunchStart().getSeconds(),s.getLunchStart().getNanos());
         Timestamp lunchStop = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),s.getLunchStop().getHours(),s.getLunchStop().getMinutes(),s.getLunchStop().getSeconds(), s.getLunchStop().getNanos());
+        
+        shiftStop = TASLogic.forceXafterY(shiftStop,shiftStart);
+        lunchStart = TASLogic.forceXafterY(lunchStart, shiftStart);
+        lunchStop = TASLogic.forceXafterY(lunchStop, lunchStart);
+        
         int interval = s.getInterval() * Shift.MILLIS_TO_MIN;
         int gracePeriod = s.getGracePeriod() * Shift.MILLIS_TO_MIN;
         int dock = s.getDock() * Shift.MILLIS_TO_MIN;  

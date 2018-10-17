@@ -35,5 +35,9 @@ public class TeamProject {
         p1.adjust(s2);
         p2.adjust(s2);
         
+        Shift s4 = db.getShift(4);
+        
+        System.out.println(s4);
+        
     }
 }

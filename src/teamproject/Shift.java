@@ -14,6 +14,7 @@ public class Shift {
     
     public static final String TIME_FORMAT = "HH:mm";
     public static final int MILLIS_TO_MIN = 60000;
+    public static final long MILLIS_TO_HOURS = 3600000;
     
     private int id;
     private String description;
@@ -46,13 +47,17 @@ public class Shift {
     
     public String toString(){
         
-        long start = this.start.getTime();
-        long stop = this.stop.getTime();
-        long difference = (stop - start)/MILLIS_TO_MIN;
+        Timestamp stop = TASLogic.forceXafterY(this.stop, start);
+        Timestamp lunchStart = TASLogic.forceXafterY(this.lunchStart, start);
+        Timestamp lunchStop = TASLogic.forceXafterY(this.lunchStop, start);
         
-        long lunchStart = this.lunchStart.getTime();
-        long lunchStop = this.lunchStop.getTime();
-        long lunchDiff = (lunchStop - lunchStart)/MILLIS_TO_MIN;
+        long startMillis = this.start.getTime();
+        long stopMillis = stop.getTime();
+        long difference = (stopMillis - startMillis)/MILLIS_TO_MIN;
+        
+        long lunchStartMillis = lunchStart.getTime();
+        long lunchStopMillis = lunchStop.getTime();
+        long lunchDiff = (lunchStopMillis - lunchStartMillis)/MILLIS_TO_MIN;
         
         String startHour = (new SimpleDateFormat(TIME_FORMAT)).format(start);
         String stopHour = (new SimpleDateFormat(TIME_FORMAT)).format(stop);

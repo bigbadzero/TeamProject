@@ -10,6 +10,7 @@ package teamproject;
  * @author Brendan
  */
 import java.util.ArrayList;
+import java.sql.Timestamp;
 
 public class TASLogic {
     
@@ -41,5 +42,13 @@ public class TASLogic {
         }
         
         return minutes;
+    }
+    
+    public static Timestamp forceXafterY(Timestamp x, Timestamp y){
+        if(x.before(y)){
+            x = new Timestamp(x.getTime() + 24*Shift.MILLIS_TO_HOURS);
+        }
+        
+        return x;
     }
 }
