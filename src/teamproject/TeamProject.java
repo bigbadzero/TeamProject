@@ -35,6 +35,7 @@ public class TeamProject {
         p1.adjust(s2);
         p2.adjust(s2);
         
+
         
         Shift s1 = db.getShift(1);
         GregorianCalendar gc = new GregorianCalendar(2018,7,1);
@@ -43,6 +44,11 @@ public class TeamProject {
         int mins = TASLogic.calculateTotalMinutes(punchList, s1);
         
         System.out.println(mins);
+
+        Shift s4 = db.getShift(4);
+        
+        System.out.println(s4);
+
         
     }
 }
