@@ -27,6 +27,7 @@ public class TASLogic {
         int totalMinutes = 0;
         Long totalMillis = new Long(0);
         Punch previous = null;
+        boolean inPair = false;
         boolean lunchOut = false;
         boolean lunchIn = false;
         
@@ -37,10 +38,18 @@ public class TASLogic {
         for(Punch p: punchList){
             p.adjust(shift);
             
-            if(p.getPunchtypeid() == Punch.CLOCKED_IN)
+            if(p.getPunchtypeid() == Punch.CLOCKED_IN && !inPair){
                 previous = p;
-            else if(p.getPunchtypeid() == Punch.CLOCKED_OUT)
-                totalMillis += p.getAdjustedtimestamp().getTime() - previous.getAdjustedtimestamp().getTime();
+                inPair = true;
+            }
+            else if(inPair){
+                if(p.getPunchtypeid() == Punch.CLOCKED_OUT){
+                    totalMillis += p.getAdjustedtimestamp().getTime() - previous.getAdjustedtimestamp().getTime();
+                    inPair = false;
+                }
+                else if(p.getPunchtypeid() == Punch.TIMED_OUT)
+                    inPair = false;
+            }
             
             if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_START))
                 lunchOut = true;
