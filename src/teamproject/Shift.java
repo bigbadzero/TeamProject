@@ -15,6 +15,7 @@ public class Shift {
     public static final String TIME_FORMAT = "HH:mm";
     public static final int MILLIS_TO_MIN = 60000;
     public static final long MILLIS_TO_HOURS = 3600000;
+    public static final int MILLIS_TO_SECS = 1000;
     
     private int id;
     private String description;
