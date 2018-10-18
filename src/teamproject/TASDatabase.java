@@ -192,23 +192,35 @@ public class TASDatabase {
         
   
         try{
-           // PreparedStatement pst = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;");
-           PreparedStatement pst = conn.prepareStatement("SELECT * FROM punch WHERE badgeid = ? AND  ((originaltimestamp LIKE ?) OR (originaltimestamp LIKE ? AND punchtypeid = ?));");
-            pst.setString(1, badgeId);
-            pst.setString(2, date + "%"); 
-            pst.setString(3, followingDate);
-            pst.setInt(4, Punch.CLOCKED_OUT);
+            PreparedStatement pst1 = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;"); 
+            pst1.setString(1, badgeId);
+            pst1.setString(2, date + "%"); 
             
-            ResultSet result = pst.executeQuery();
-            
-            while(result.next()){
-                int punchId = result.getInt("id");
+            ResultSet result1 = pst1.executeQuery();
+            while(result1.next()){
+                int punchId = result1.getInt("id");
                 Punch punch = this.getPunch(punchId);
                 punchList.add(punch);
             }
             
-            result.close();
-            pst.close();
+            PreparedStatement pst2 = conn.prepareStatement("SELECT * FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ? LIMIT 1;");
+            pst2.setString(1, badgeId);
+            pst2.setString(2, followingDate + "%");
+            
+            ResultSet result2 = pst2.executeQuery();
+            if(result2.next()){
+                if(result2.getInt("punchtypeid") == Punch.CLOCKED_OUT){
+                    int punchId = result2.getInt("id");
+                    Punch punch = this.getPunch(punchId);
+                    punchList.add(punch);
+                }
+            }
+                
+            
+            result1.close();
+            pst1.close();
+            result2.close();
+            pst2.close();
         }
         catch(Exception e){System.err.println(e.getMessage());}
         
