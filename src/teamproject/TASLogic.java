@@ -57,7 +57,7 @@ public class TASLogic {
                 lunchIn = true;
         }
         if(!lunchOut && !lunchIn){
-            if(totalMillis >= lunchDeduct)
+            if(totalMillis > lunchDeduct)
                 totalMillis -= lunchLength;
         }
     
