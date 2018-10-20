@@ -57,9 +57,10 @@ public class TASLogic {
             punchData.put("id", String.valueOf(punch.getId()));
             punchData.put("badgeid", punch.getBadgeid());
             punchData.put("terminalid", String.valueOf(punch.getTerminalid()));
-            punchData.put("eventtypeid",String.valueOf(punch.getPunchtypeid()));
-            punchData.put("eventdata", punch.getEventdata());
+            punchData.put("punchtypeid",String.valueOf(punch.getPunchtypeid()));
+            punchData.put("punchdata", punch.getEventdata());
             punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTime()));
+            punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedtimestamp().getTime()));
             
             jsonData.add(punchData);
         }
