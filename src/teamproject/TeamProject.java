@@ -50,5 +50,8 @@ public class TeamProject {
         System.out.println(s4);
 
         
+        Punch p = db.getPunch(147);
+        ArrayList dailyPunches = db.getDailyPunchList(p.getBadge(), p.getOriginaltimestamp().getTime());
+        System.out.println(TASLogic.getPunchListAsJSON(dailyPunches));
     }
 }

@@ -10,6 +10,8 @@ package teamproject;
  * @author Brendan
  */
 import java.util.ArrayList;
+import java.util.HashMap;
+import org.json.simple.*;
 import java.lang.Number;
 import java.sql.Timestamp;
 
@@ -84,5 +86,29 @@ public class TASLogic {
         }
         
         return x;
+    }
+    
+    public static String getPunchListAsJSON(ArrayList<Punch> dailypunchlist){
+        
+        ArrayList<HashMap<String, String>> jsonData = new ArrayList<>();
+        HashMap<String, String>  punchData;
+        
+        for(int i = 0; i < dailypunchlist.size(); i++){
+            Punch punch = dailypunchlist.get(i);
+            punchData = new HashMap<>();
+            
+            punchData.put("id", String.valueOf(punch.getId()));
+            punchData.put("badgeid", punch.getBadgeid());
+            punchData.put("terminalid", String.valueOf(punch.getTerminalid()));
+            punchData.put("punchtypeid",String.valueOf(punch.getPunchtypeid()));
+            punchData.put("punchdata", punch.getEventdata());
+            punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTime()));
+            punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedtimestamp().getTime()));
+            
+            jsonData.add(punchData);
+        }
+        
+        String json = JSONValue.toJSONString(jsonData);
+        return json;
     }
 }
