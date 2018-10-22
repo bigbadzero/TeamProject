@@ -47,6 +47,23 @@ public class TeamProject {
 
         Shift s4 = db.getShift(4);
         
+        b = db.getBadge("28DC3FB8");
+        gc = new GregorianCalendar(2018,8,7);
+        
+        punchList = db.getDailyPunchList(b,gc.getTimeInMillis());
+        
+        mins = TASLogic.calculateTotalMinutes(punchList, s1);
+        
+        System.out.println(mins);
+        
+        b = db.getBadge("021890C0");
+        gc = new GregorianCalendar(2018,8,12);
+        
+        punchList = db.getDailyPunchList(b, gc.getTimeInMillis());
+        
+        mins = TASLogic.calculateTotalMinutes(punchList, s1);
+        
+        System.out.println(mins);
         System.out.println(s4);
 
         
