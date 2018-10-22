@@ -18,7 +18,9 @@ import java.sql.Timestamp;
 
 public class TASLogic {
     
-    
+    public static final int MILLIS_TO_MIN = 60000;
+    public static final long MILLIS_TO_HOURS = 3600000;
+    public static final int MILLIS_TO_SECS = 1000;
     
     public static int calculateTotalMinutes(ArrayList<Punch> punchList,Shift shift){
         
@@ -28,6 +30,7 @@ public class TASLogic {
         *Before converting the total of milliseconds to minutes
         */
         
+        
         int totalMinutes = 0;
         Long totalMillis = new Long(0);
         Punch previous = null;
@@ -36,8 +39,8 @@ public class TASLogic {
         boolean lunchIn = false;
         
         //convert instance fields of shift into milliseconds
-        long lunchDeduct = shift.getLunchDeduct() * Shift.MILLIS_TO_MIN;
-        long lunchLength = shift.getLunchLength() * Shift.MILLIS_TO_MIN;
+        long lunchDeduct = shift.getLunchDeduct() * TASLogic.MILLIS_TO_MIN;
+        long lunchLength = shift.getLunchLength() * TASLogic.MILLIS_TO_MIN;
         
         for(Punch p: punchList){
             p.adjust(shift);
@@ -65,14 +68,14 @@ public class TASLogic {
                 totalMillis -= lunchLength;
         }
     
-        totalMinutes = (new Long(totalMillis/Shift.MILLIS_TO_MIN)).intValue();
+        totalMinutes = (new Long(totalMillis/TASLogic.MILLIS_TO_MIN)).intValue();
         
         return totalMinutes;
     }
     
     public static Timestamp forceXafterY(Timestamp x, Timestamp y){
         if(x.before(y)){
-            x = new Timestamp(x.getTime() + 24*Shift.MILLIS_TO_HOURS);
+            x = new Timestamp(x.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
         }
         
         return x;

@@ -186,7 +186,7 @@ public class TASDatabase {
         
         String badgeId = b.getId();
         Timestamp timestamp = new Timestamp(ts);
-        Timestamp followingTimestamp = new Timestamp(timestamp.getTime() + 24*Shift.MILLIS_TO_HOURS);
+        Timestamp followingTimestamp = new Timestamp(timestamp.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
         String followingDate = new SimpleDateFormat("yyyy-MM-dd").format(followingTimestamp);
         

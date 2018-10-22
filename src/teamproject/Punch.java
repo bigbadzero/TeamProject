@@ -77,9 +77,9 @@ public class Punch {
         lunchStart = TASLogic.forceXafterY(lunchStart, shiftStart);
         lunchStop = TASLogic.forceXafterY(lunchStop, lunchStart);
         
-        int interval = s.getInterval() * Shift.MILLIS_TO_MIN;
-        int gracePeriod = s.getGracePeriod() * Shift.MILLIS_TO_MIN;
-        int dock = s.getDock() * Shift.MILLIS_TO_MIN;  
+        int interval = s.getInterval() * TASLogic.MILLIS_TO_MIN;
+        int gracePeriod = s.getGracePeriod() * TASLogic.MILLIS_TO_MIN;
+        int dock = s.getDock() * TASLogic.MILLIS_TO_MIN;  
         
         Timestamp shiftStartEarly = new Timestamp(shiftStart.getTime() - interval);
         Timestamp shiftStartLate = new Timestamp(shiftStart.getTime() + interval);

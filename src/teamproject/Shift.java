@@ -13,9 +13,7 @@ import java.lang.Number;
 public class Shift {
     
     public static final String TIME_FORMAT = "HH:mm";
-    public static final int MILLIS_TO_MIN = 60000;
-    public static final long MILLIS_TO_HOURS = 3600000;
-    public static final int MILLIS_TO_SECS = 1000;
+    
     
     private int id;
     private String description;
@@ -42,7 +40,7 @@ public class Shift {
         this.lunchStop = lunchStop;
         this.lunchDeduct = lunchDeduct;
         
-        Long lunchLength = (lunchStop.getTime() - lunchStart.getTime())/Shift.MILLIS_TO_MIN;
+        Long lunchLength = (lunchStop.getTime() - lunchStart.getTime())/TASLogic.MILLIS_TO_MIN;
         this.lunchLength = lunchLength.intValue();
     }
     
@@ -54,11 +52,11 @@ public class Shift {
         
         long startMillis = this.start.getTime();
         long stopMillis = stop.getTime();
-        long difference = (stopMillis - startMillis)/MILLIS_TO_MIN;
+        long difference = (stopMillis - startMillis)/TASLogic.MILLIS_TO_MIN;
         
         long lunchStartMillis = lunchStart.getTime();
         long lunchStopMillis = lunchStop.getTime();
-        long lunchDiff = (lunchStopMillis - lunchStartMillis)/MILLIS_TO_MIN;
+        long lunchDiff = (lunchStopMillis - lunchStartMillis)/TASLogic.MILLIS_TO_MIN;
         
         String startHour = (new SimpleDateFormat(TIME_FORMAT)).format(start);
         String stopHour = (new SimpleDateFormat(TIME_FORMAT)).format(stop);
