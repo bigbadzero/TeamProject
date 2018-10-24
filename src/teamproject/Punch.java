@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.sql.Time;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 
 public class Punch {
     
@@ -68,13 +67,15 @@ public class Punch {
         
         Timestamp ots = originalTimestamp;
         int day = originalTimestamp.getDay();
-  
-        HashMap<String,Timestamp> shiftValues = s.getParticularShiftValues(ots);
+
+        Timestamp shiftStart = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),s.getStart().getHours(),s.getStart().getMinutes(),s.getStart().getSeconds(), s.getStart().getNanos());
+        Timestamp shiftStop = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),s.getStop().getHours(),s.getStop().getMinutes(),s.getStop().getSeconds(),s.getStop().getNanos());
+        Timestamp lunchStart = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),s.getLunchStart().getHours(),s.getLunchStart().getMinutes(),s.getLunchStart().getSeconds(),s.getLunchStart().getNanos());
+        Timestamp lunchStop = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),s.getLunchStop().getHours(),s.getLunchStop().getMinutes(),s.getLunchStop().getSeconds(), s.getLunchStop().getNanos());
         
-        Timestamp shiftStart = shiftValues.get(Shift.SHIFT_START);
-        Timestamp lunchStart = shiftValues.get(Shift.LUNCH_START);
-        Timestamp lunchStop = shiftValues.get(Shift.LUNCH_STOP);
-        Timestamp shiftStop = shiftValues.get(Shift.SHIFT_STOP);
+        shiftStop = TASLogic.forceXafterY(shiftStop,shiftStart);
+        lunchStart = TASLogic.forceXafterY(lunchStart, shiftStart);
+        lunchStop = TASLogic.forceXafterY(lunchStop, lunchStart);
         
         int interval = s.getInterval() * TASLogic.MILLIS_TO_MIN;
         int gracePeriod = s.getGracePeriod() * TASLogic.MILLIS_TO_MIN;

@@ -12,7 +12,6 @@ package teamproject;
 import java.util.ArrayList;
 import java.sql.Timestamp;
 import java.util.GregorianCalendar;
-import java.lang.Long;
 
 public class TeamProject {
 
@@ -42,7 +41,7 @@ public class TeamProject {
         GregorianCalendar gc = new GregorianCalendar(2018,7,1);
         ArrayList<Punch> punchList = db.getDailyPunchList(b,gc.getTimeInMillis() );
         
-        /*int mins = TASLogic.calculateTotalMinutes(punchList, s1);
+        int mins = TASLogic.calculateTotalMinutes(punchList, s1);
         
         System.out.println(mins);
 
@@ -67,24 +66,9 @@ public class TeamProject {
         System.out.println(mins);
         System.out.println(s4);
 
-        */
-
         
-        Punch punch = db.getPunch(3634);
-        Badge b1 = db.getBadge(punch.getBadgeid());
-        Shift shift1 = db.getShift(b1);
-        ArrayList<Punch> dailyPunches = db.getDailyPunchList(b1, punch.getOriginaltimestamp().getTime());
-        
-        
-        for(Punch p :dailyPunches){
-            p.adjust(s1);
-            System.out.println(p.printOriginalTimestamp());
-            System.out.println(p.printAdjustedTimestamp());
-            System.out.println(p.getOriginaltimestamp().getTime());
-            
-            Timestamp ts = new Timestamp(p.getOriginaltimestamp().getTime());
-            System.out.println(ts.toString());
-        }
-        
+        Punch p = db.getPunch(147);
+        ArrayList dailyPunches = db.getDailyPunchList(p.getBadge(), p.getOriginaltimestamp().getTime());
+        System.out.println(TASLogic.getPunchListAsJSON(dailyPunches));
     }
 }

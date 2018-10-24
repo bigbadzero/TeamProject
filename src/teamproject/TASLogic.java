@@ -74,16 +74,10 @@ public class TASLogic {
     }
     
     public static Timestamp forceXafterY(Timestamp x, Timestamp y){
-        while(x.before(y)){
+        if(x.before(y)){
             x = new Timestamp(x.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
         }
         
-        return x;
-    }
-    public static Timestamp forceXbeforeY(Timestamp x, Timestamp y){
-        while(x.after(y)){
-            x = new Timestamp(x.getTime() - 24*TASLogic.MILLIS_TO_HOURS);
-        }
         return x;
     }
     
