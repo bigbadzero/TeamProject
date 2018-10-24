@@ -9,10 +9,15 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.lang.Number;
+import java.util.HashMap;
 
 public class Shift {
     
     public static final String TIME_FORMAT = "HH:mm";
+    public static final String SHIFT_START = "Shift Start";
+    public static final String LUNCH_START = "Lunch Start";
+    public static final String LUNCH_STOP = "Lunch Stop";
+    public static final String SHIFT_STOP = "Shift Stop";
     
     
     private int id;
@@ -69,6 +74,71 @@ public class Shift {
         output += "Lunch: " + lunchStartHour + " - " + lunchStopHour + " (" + lunchDiff + " minutes)";
         
         return output;
+    }
+    
+    public HashMap<String,Timestamp> getParticularShiftValues(Timestamp ts){
+        HashMap<String,Timestamp> shiftValues = new HashMap();
+        
+        long shiftLength = this.stop.getTime() - this.start.getTime();
+        int lunchLength = this.lunchLength;
+        long lunchStarts = this.lunchStart.getTime() - this.start.getTime();
+        
+        long startDiff = 0;
+        long stopDiff = 0;
+        
+        int year = ts.getYear();
+        int month = ts.getMonth();
+        int date = ts.getDate();
+        
+        int startHour = this.start.getHours();
+        int startMin = this.start.getMinutes();
+        Timestamp shiftStart = new Timestamp(year,month,date,startHour,startMin,0,0);
+        //Timestamp shiftStartPrevDay = new Timestamp(shiftStartCurrentDay.getTime() - 24*TASLogic.MILLIS_TO_HOURS);
+        
+        int lunchStartHour = this.lunchStart.getHours();
+        int lunchStartMin = this.lunchStart.getMinutes();
+        Timestamp lunchStart = new Timestamp(year,month,date,lunchStartHour,lunchStartMin,0,0);
+        Timestamp lunchStop = new Timestamp(lunchStart.getTime() + lunchLength*TASLogic.MILLIS_TO_MIN);
+        
+        int stopHour = this.stop.getHours();
+        int stopMin = this.stop.getMinutes();
+        Timestamp shiftStop = new Timestamp(year,month,date,stopHour,stopMin,0,0);
+        //Timestamp shiftStopNextDay = new Timestamp(shiftStopCurrentDay.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
+        
+        if(shiftStop.after(shiftStart)){
+            shiftValues.put(SHIFT_START, shiftStart);
+            shiftValues.put(LUNCH_START, lunchStart);
+            shiftValues.put(LUNCH_STOP, lunchStop);
+            shiftValues.put(SHIFT_STOP, shiftStop);
+        }
+        else{
+            if(ts.after(shiftStart) || ts.equals(shiftStart))
+                startDiff = ts.getTime() - shiftStart.getTime();
+            else
+                startDiff = shiftStart.getTime() - ts.getTime();
+
+            if(ts.after(shiftStop) || ts.equals(shiftStop))
+                stopDiff = ts.getTime() - shiftStop.getTime();
+            else
+                stopDiff = shiftStop.getTime() - ts.getTime();
+
+            if(startDiff < stopDiff)
+                shiftStop = new Timestamp(shiftStop.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
+            else
+                shiftStart = new Timestamp(shiftStart.getTime() - 24*TASLogic.MILLIS_TO_HOURS);
+            
+            lunchStart = TASLogic.forceXafterY(lunchStart, shiftStart);
+            lunchStop = TASLogic.forceXafterY(lunchStop, lunchStart);
+            
+            
+            shiftValues.put(SHIFT_START, shiftStart);
+            shiftValues.put(LUNCH_START, lunchStart);
+            shiftValues.put(LUNCH_STOP, lunchStop);
+            shiftValues.put(SHIFT_STOP, shiftStop);
+        }
+        
+        
+        return shiftValues;
     }
 
     public int getId() {
