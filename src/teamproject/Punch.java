@@ -70,11 +70,13 @@ public class Punch {
         int day = originalTimestamp.getDay();
   
         HashMap<String,Timestamp> shiftValues = s.getParticularShiftValues(ots);
-        
         Timestamp shiftStart = shiftValues.get(Shift.SHIFT_START);
         Timestamp lunchStart = shiftValues.get(Shift.LUNCH_START);
         Timestamp lunchStop = shiftValues.get(Shift.LUNCH_STOP);
         Timestamp shiftStop = shiftValues.get(Shift.SHIFT_STOP);
+        
+        if(day != shiftStart.getDay())
+            day = shiftStart.getDay();
         
         int interval = s.getInterval() * TASLogic.MILLIS_TO_MIN;
         int gracePeriod = s.getGracePeriod() * TASLogic.MILLIS_TO_MIN;
