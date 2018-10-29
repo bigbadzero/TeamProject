@@ -226,5 +226,19 @@ public class TASDatabase {
         
         return punchList;
     }
+    public ArrayList<Punch> getPayPeriodPunchList(Badge b, long ts){
+        ArrayList<Punch> punchList = new ArrayList();
+        
+        return punchList;
+    }
+    public Absenteeism getAbsenteeism(String badgeId, long ts){
+        Absenteeism absenteeism = null;
+        
+        return absenteeism;
+    }
+    
+    public void insertAbsenteeism(Absenteeism a){
+        
+    }
     
 }
