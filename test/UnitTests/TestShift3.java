@@ -3,21 +3,32 @@ package UnitTests;
 import org.junit.*;
 import static org.junit.Assert.*;
 import teamproject.*;
+import java.util.GregorianCalendar;
+import java.sql.Timestamp;
 
 public class TestShift3{
 	private TASDatabase db;
+
 	
 	@Before
 	public void setup(){
 		db = new TASDatabase();
+                
 	}
 	
 	@Test
 	public void testFirstDay(){
-		Shift s4 = db.getShift(4);
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
 		
-		Punch p1 = db.getPunch(6897);
-		Punch p2 = db.getPunch(6898);
+                GregorianCalendar gc1 = new GregorianCalendar(2018,9,29,22,29);
+                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
+                GregorianCalendar gc2 = new GregorianCalendar(2018,9,30,7,4);
+                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
+		
+		Punch p1 = new Punch(badge,3342,103,clockIn,1);
+		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
@@ -30,15 +41,21 @@ public class TestShift3{
 	}
 	@Test
 	public void testSecondDay(){
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
 	
-		Shift s4 = db.getShift(4);
+		GregorianCalendar gc1 = new GregorianCalendar(2018,9,30,22,30);
+                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
+                GregorianCalendar gc2 = new GregorianCalendar(2018,9,31,7,0);
+                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
 		
-		Punch p1 = db.getPunch(6899);
-		Punch p2 = db.getPunch(6900);
+		Punch p1 = new Punch(badge,3342,103,clockIn,1);
+		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
-		
+				
 		assertEquals("#TESTMAN1 CLOCKED IN: TUE 10/30/2018 22:30:00", p1.printOriginalTimestamp());
 		assertEquals("#TESTMAN1 CLOCKED IN: TUE 10/30/2018 22:30:00 (Shift Start)", p1.printAdjustedTimestamp());
 		
@@ -49,10 +66,17 @@ public class TestShift3{
 	
 	@Test
 	public void testThirdDay(){
-		Shift s4 = db.getShift(4);
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
+            
+		GregorianCalendar gc1 = new GregorianCalendar(2018,9,31,22,31);
+                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
+                GregorianCalendar gc2 = new GregorianCalendar(2018,10,1,6,56);
+                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
 		
-		Punch p1 = db.getPunch(6901);
-		Punch p2 = db.getPunch(6902);
+		Punch p1 = new Punch(badge,3342,103,clockIn,1);
+		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
@@ -66,10 +90,17 @@ public class TestShift3{
 	
 	@Test
 	public void testFourthDay(){
-		Shift s4 = db.getShift(4);
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
+            
+		GregorianCalendar gc1 = new GregorianCalendar(2018,10,1,22,40);
+                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
+                GregorianCalendar gc2 = new GregorianCalendar(2018,10,2,6,50);
+                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
 		
-		Punch p1 = db.getPunch(6903);
-		Punch p2 = db.getPunch(6904);
+		Punch p1 = new Punch(badge,3342,103,clockIn,1);
+		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
@@ -83,15 +114,33 @@ public class TestShift3{
 	
 	@Test
 	public void testFifthDay(){
-		Shift s4 = db.getShift(4);
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
+            
+		GregorianCalendar gc1 = new GregorianCalendar(2018,10,2,22,30);
+                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
+                
+                GregorianCalendar gc2 = new GregorianCalendar(2018,10,3,2,31);
+                Timestamp lunchClockOut = new Timestamp(gc2.getTimeInMillis());
+                
+                GregorianCalendar gc3 = new GregorianCalendar(2018,10,3,2,54);
+                Timestamp lunchClockIn = new Timestamp(gc3.getTimeInMillis());
+                
+                GregorianCalendar gc4 = new GregorianCalendar(2018,10,3,7,0);
+                Timestamp clockOut = new Timestamp(gc4.getTimeInMillis());
+                
+                
 		
-		Punch p1 = db.getPunch(6905);
-		Punch p2 = db.getPunch(6906);
-		Punch p3 = db.getPunch(6907);
-		Punch p4 = db.getPunch(6908);
+		Punch p1 = new Punch(badge,3342,103,clockIn,1);
+                Punch p2 = new Punch(badge,3343,103,lunchClockOut,0);
+                Punch p3 = new Punch(badge,3344,103,lunchClockIn,1);
+		Punch p4 = new Punch(badge,3345,103,clockOut,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
+                p3.adjust(s4);
+                p4.adjust(s4);
 		
 		assertEquals("#TESTMAN1 CLOCKED IN: FRI 11/02/2018 22:30:00", p1.printOriginalTimestamp());
 		assertEquals("#TESTMAN1 CLOCKED IN: FRI 11/02/2018 22:30:00 (Shift Start)", p1.printAdjustedTimestamp());
