@@ -48,21 +48,21 @@ public class TASDatabase {
             pst.setInt(1,id);
             
             ResultSet result = pst.executeQuery();
-            result.next();
+            if(result.next()){
+                String badgeId = result.getString("badgeid");
             
-            String badgeId = result.getString("badgeid");
+                int terminalId = result.getInt("terminalid");
+                int ptid = result.getInt("punchtypeid");
+                long ts = result.getLong("ts");
+                Badge badge = this.getBadge(badgeId);
             
-            int terminalId = result.getInt("terminalid");
-            int ptid = result.getInt("punchtypeid");
-            long ts = result.getLong("ts");
-            Badge badge = this.getBadge(badgeId);
-            
-            ts = ts*1000;
-            Timestamp ots = new Timestamp(ts);
+                ts = ts*1000;
+                Timestamp ots = new Timestamp(ts);
             
             
 
-            punch = new Punch(badge,id, terminalId,ots,ptid);
+                punch = new Punch(badge,id, terminalId,ots,ptid);
+            }
             
             result.close();
             pst.close();
@@ -80,11 +80,10 @@ public class TASDatabase {
             pst.setString(1,id);
             
             ResultSet result = pst.executeQuery();
-            result.next();
-                       
-            String badgeDesc = result.getString("description");
-            
-            badge = new Badge(id, badgeDesc);
+            if(result.next()){
+                String badgeDesc = result.getString("description");
+                badge = new Badge(id, badgeDesc);
+            }   
             
             result.close();
             pst.close();
@@ -102,22 +101,21 @@ public class TASDatabase {
             pst.setInt(1, id);
             
             ResultSet result = pst.executeQuery();
-            result.next();
+            if(result.next()){
+                String desc = result.getString("description");
             
-            String desc = result.getString("description");
-            
-            
-            Timestamp start = new Timestamp(result.getLong("start") *1000);
-            Timestamp stop = new Timestamp(result.getLong("stop") *1000);
-            int interval = result.getInt("interval");
-            int gracePeriod = result.getInt("graceperiod");
-            int dock = result.getInt("dock");
-            Timestamp lunchStart = new Timestamp(result.getLong("lunchstart") *1000);
-            Timestamp lunchStop = new Timestamp(result.getLong("lunchstop") *1000);
-            //lunch length
-            int lunchDeduct = result.getInt("lunchdeduct");
-            
-            shift = new Shift(id,desc, start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
+                Timestamp start = new Timestamp(result.getLong("start") *1000);
+                Timestamp stop = new Timestamp(result.getLong("stop") *1000);
+                int interval = result.getInt("interval");
+                int gracePeriod = result.getInt("graceperiod");
+                int dock = result.getInt("dock");
+                Timestamp lunchStart = new Timestamp(result.getLong("lunchstart") *1000);
+                Timestamp lunchStop = new Timestamp(result.getLong("lunchstop") *1000);
+                //lunch length
+                int lunchDeduct = result.getInt("lunchdeduct");
+
+                shift = new Shift(id,desc, start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
+            }
             
             result.close();
             pst.close();
@@ -135,11 +133,12 @@ public class TASDatabase {
         pst.setString(1, badgeID);
         
         ResultSet result = pst.executeQuery();
-        result.next();
+        if(result.next()){
         
-        int shiftId = result.getInt("shiftid");
+            int shiftId = result.getInt("shiftid");
         
-        shift = this.getShift(shiftId);
+            shift = this.getShift(shiftId);
+        }
         
         result.close();
         pst.close();
@@ -248,17 +247,22 @@ public class TASDatabase {
         return punchList;
     }
     public Absenteeism getAbsenteeism(String badgeId, long ts){
-        Absenteeism absenteeism = null;
+         Absenteeism absenteeism = null;
         String sql = "SELECT * FROM absenteeism WHERE badgeid = ? AND payperiod = ?;";
+        
+        long payPeriodStart = Absenteeism.getPayPeriodStart(ts);
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(payPeriodStart);
+        System.out.println(date);
         try{
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, badgeId);
-            pst.setLong(2, ts);
+            pst.setString(2, date);
             
             ResultSet result = pst.executeQuery();
-            double percentage = result.getDouble("percentage");
-            absenteeism = new Absenteeism(badgeId,ts,percentage);
-            
+            if(result.next()){
+                double percentage = result.getDouble("percentage");
+                absenteeism = new Absenteeism(badgeId,ts,percentage);
+            }
             result.close();
             pst.close();
         }

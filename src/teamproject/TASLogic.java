@@ -23,6 +23,7 @@ public class TASLogic {
     public static final int MILLIS_TO_SECS = 1000;
     
     public static final int NUM_DAYS = 7;
+    public static final int WORK_WEEK = 5;
     
     public static int calculateTotalMinutes(ArrayList<Punch> punchList,Shift shift){
         
@@ -108,11 +109,22 @@ public class TASLogic {
     }
     public static double calculateAbsenteeism(ArrayList<Punch> punchList, Shift s){
         double percentage = 0;
-        int minutesWorked = calculateTotalMinutes(punchList,s);
-        int minutesRequired = s.getLunchDeduct() * NUM_DAYS;
+        
+        int shiftLength = s.getShiftLength();
+        
+        double minutesWorked = calculateTotalMinutes(punchList,s);
+        double minutesRequired = shiftLength * WORK_WEEK;
+        
+       /* System.out.println(minutesWorked);
+        System.out.println(minutesRequired);
+        System.out.println(minutesWorked/minutesRequired);
+        
+        for(Punch p: punchList){
+            System.out.println(p.printAdjustedTimestamp());
+        }*/
         
         percentage = 100 - ((minutesWorked/minutesRequired)*100);
         
-        return percentage;
-    }
+        
+        return percentage;    }
 }

@@ -27,14 +27,8 @@ public class Absenteeism {
         this.badgeId = badgeId;
         
 
-        payPeriod = new GregorianCalendar();
-        payPeriod.setTimeInMillis(ts);
-        
-        payPeriod.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
-        payPeriod.set(Calendar.HOUR_OF_DAY, 0);
-        payPeriod.set(Calendar.MINUTE, 0);
-        payPeriod.set(Calendar.SECOND, 0);
-        payPeriod.set(Calendar.MILLISECOND, 0);
+        payPeriod = new GregorianCalendar(); 
+        payPeriod.setTimeInMillis(getPayPeriodStart(ts));
         
         this.percentage = percentage;
     }
@@ -73,5 +67,18 @@ public class Absenteeism {
     public void setPercentage(double percentage) {
         this.percentage = percentage;
     }
+    public static long getPayPeriodStart(long ts){
+        GregorianCalendar payPeriod = new GregorianCalendar();
+        payPeriod.setTimeInMillis(ts);
+        
+        payPeriod.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+        payPeriod.set(Calendar.HOUR_OF_DAY, 0);
+        payPeriod.set(Calendar.MINUTE, 0);
+        payPeriod.set(Calendar.SECOND, 0);
+        payPeriod.set(Calendar.MILLISECOND, 0);
+        
+        return payPeriod.getTimeInMillis();
+    }
+
     
 }

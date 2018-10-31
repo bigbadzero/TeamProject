@@ -30,6 +30,7 @@ public class Shift {
     private Timestamp lunchStop;
     private int lunchLength;
     private int lunchDeduct;
+    private int shiftLength;
     
     
     public Shift(int id, String description, Timestamp start, Timestamp stop, int interval, int gracePeriod, int dock, Timestamp lunchStart, Timestamp lunchStop,  int lunchDeduct){
@@ -46,6 +47,11 @@ public class Shift {
         
         Long lunchLength = (lunchStop.getTime() - lunchStart.getTime())/TASLogic.MILLIS_TO_MIN;
         this.lunchLength = lunchLength.intValue();
+        
+        Timestamp shiftStop = TASLogic.forceXafterY(stop, start);
+        Long shiftLength = (shiftStop.getTime() - start.getTime())/TASLogic.MILLIS_TO_MIN;
+        shiftLength -= lunchLength;
+        this.shiftLength = shiftLength.intValue();
     }
     
     public String toString(){
@@ -182,6 +188,9 @@ public class Shift {
 
     public int getLunchDeduct() {
         return lunchDeduct;
+    }
+    public int getShiftLength(){
+        return shiftLength;
     }
 
     public void setId(int id) {
