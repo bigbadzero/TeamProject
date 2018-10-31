@@ -35,7 +35,7 @@ public class Absenteeism {
     
     public String toString(){
         String output = "";
-        String date = new SimpleDateFormat(DATE_FORMAT).format(payPeriod);
+        String date = new SimpleDateFormat(DATE_FORMAT).format(payPeriod.getTimeInMillis());
         
         output += "#" + badgeId;
         output += " (Pay Period Starting " + date + "): ";
