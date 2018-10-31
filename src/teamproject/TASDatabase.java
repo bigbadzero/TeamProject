@@ -9,6 +9,7 @@ package teamproject;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class TASDatabase {
@@ -229,16 +230,84 @@ public class TASDatabase {
     public ArrayList<Punch> getPayPeriodPunchList(Badge b, long ts){
         ArrayList<Punch> punchList = new ArrayList();
         
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTimeInMillis(ts);
+        gc.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+        gc.set(Calendar.HOUR_OF_DAY, 0);
+        gc.set(Calendar.MINUTE, 0);
+        gc.set(Calendar.SECOND, 0);
+        gc.set(Calendar.MILLISECOND, 0);
+        
+        for(int i = 0; i < TASLogic.NUM_DAYS; ++i){
+            ArrayList<Punch> dayPunches = getDailyPunchList(b,gc.getTimeInMillis());
+            punchList.addAll(dayPunches);
+
+            gc.roll(Calendar.DAY_OF_WEEK, true);
+        }
+        
         return punchList;
     }
     public Absenteeism getAbsenteeism(String badgeId, long ts){
         Absenteeism absenteeism = null;
+        String sql = "SELECT * FROM absenteeism WHERE badgeid = ? AND payperiod = ?;";
+        try{
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, badgeId);
+            pst.setLong(2, ts);
+            
+            ResultSet result = pst.executeQuery();
+            double percentage = result.getDouble("percentage");
+            absenteeism = new Absenteeism(badgeId,ts,percentage);
+            
+            result.close();
+            pst.close();
+        }
+        catch(Exception e){System.err.println(e.toString());}
+        
         
         return absenteeism;
     }
     
     public void insertAbsenteeism(Absenteeism a){
+        String check = "SELECT * FROM absenteeism WHERE badgeid =? AND payperiod = ?;";
+        String update = "UPDATE absenteeism SET percentage = ? WHERE badgeid = ? AND payperiod = ?;";
+        String newRecord = "INSERT INTO absenteeism (badgeid,payperiod,percentage) VALUES (?,?,?);";
         
+        String badgeId = a.getBadgeId();
+        long ts = a.getPayPeriod().getTimeInMillis();
+        double percentage = a.getPercentage();
+        String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ts);
+        
+        try{
+            PreparedStatement pst1 = conn.prepareStatement(check);
+            pst1.setString(1, badgeId);
+            pst1.setString(2, date);
+            
+            ResultSet result = pst1.executeQuery();
+            
+            if(result.next()){
+                PreparedStatement pst2 = conn.prepareStatement(update);
+                pst2.setDouble(1,percentage);
+                pst2.setString(2, badgeId);
+                pst2.setString(3, date);
+                
+                pst2.executeUpdate();
+                pst2.close();
+            }
+            else{
+                PreparedStatement pst2 = conn.prepareStatement(newRecord);
+                pst2.setString(1, badgeId);
+                pst2.setString(2, date);
+                pst2.setDouble(3, percentage);
+
+                pst2.executeUpdate();
+                pst2.close();
+            }
+            
+            result.close();
+            pst1.close();
+        }
+        catch(Exception e){System.err.println(e.toString());}
     }
     
 }

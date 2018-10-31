@@ -22,6 +22,8 @@ public class TASLogic {
     public static final long MILLIS_TO_HOURS = 3600000;
     public static final int MILLIS_TO_SECS = 1000;
     
+    public static final int NUM_DAYS = 7;
+    
     public static int calculateTotalMinutes(ArrayList<Punch> punchList,Shift shift){
         
         /*
@@ -106,6 +108,10 @@ public class TASLogic {
     }
     public static double calculateAbsenteeism(ArrayList<Punch> punchList, Shift s){
         double percentage = 0;
+        int minutesWorked = calculateTotalMinutes(punchList,s);
+        int minutesRequired = s.getLunchDeduct() * NUM_DAYS;
+        
+        percentage = 100 - ((minutesWorked/minutesRequired)*100);
         
         return percentage;
     }

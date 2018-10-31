@@ -22,53 +22,40 @@ public class TeamProject {
         
         TASDatabase db = new TASDatabase();
         
-        Badge b = db.getBadge("CEBCC740");
+         /* Get Punch */
         
+        Punch p = db.getPunch(3634);
+        Badge b = db.getBadge(p.getBadgeid());
+        Shift s = db.getShift(b);
         
-        Shift s2 = db.getShift(2);
+        /* Get Pay Period Punch List */
+        
+        System.out.println(p);
+        System.out.println(b);
+        System.out.println(s);
+        
+        long ts = p.getOriginaltimestamp().getTime();
+        System.out.println(ts);
+        ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, ts);
 
-        Punch p1 = db.getPunch(4943);
-        Punch p2 = db.getPunch(5004);
-		
-        /* Adjust Punches According to Shift Rulesets */
+        /* Adjust Punches */
         
-        p1.adjust(s2);
-        p2.adjust(s2);
+        for (Punch punch : punchlist) {
+            punch.adjust(s);
+        }
         
-
+        /* Compute Pay Period Total Absenteeism */
         
-        Shift s1 = db.getShift(1);
-        GregorianCalendar gc = new GregorianCalendar(2018,7,1);
-        ArrayList<Punch> punchList = db.getDailyPunchList(b,gc.getTimeInMillis() );
+        double percentage = TASLogic.calculateAbsenteeism(punchlist, s);
         
-        int mins = TASLogic.calculateTotalMinutes(punchList, s1);
+        System.out.println(percentage);
         
-        System.out.println(mins);
-
-        Shift s4 = db.getShift(4);
+        /* Insert Absenteeism Into Database */
         
-        b = db.getBadge("28DC3FB8");
-        gc = new GregorianCalendar(2018,8,7);
+        Absenteeism a1 = new Absenteeism(b.getId(), ts, percentage);
         
-        punchList = db.getDailyPunchList(b,gc.getTimeInMillis());
+        System.out.println(a1.getPayPeriod().getTimeInMillis());
         
-        mins = TASLogic.calculateTotalMinutes(punchList, s1);
-        
-        System.out.println(mins);
-        
-        b = db.getBadge("021890C0");
-        gc = new GregorianCalendar(2018,8,12);
-        
-        punchList = db.getDailyPunchList(b, gc.getTimeInMillis());
-        
-        mins = TASLogic.calculateTotalMinutes(punchList, s1);
-        
-        System.out.println(mins);
-        System.out.println(s4);
-
-        
-        Punch p = db.getPunch(147);
-        ArrayList dailyPunches = db.getDailyPunchList(p.getBadge(), p.getOriginaltimestamp().getTime());
-        System.out.println(TASLogic.getPunchListAsJSON(dailyPunches));
+        //db.insertAbsenteeism(a1);
     }
 }
