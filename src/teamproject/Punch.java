@@ -74,6 +74,10 @@ public class Punch {
         Timestamp lunchStart = shiftValues.get(Shift.LUNCH_START);
         Timestamp lunchStop = shiftValues.get(Shift.LUNCH_STOP);
         Timestamp shiftStop = shiftValues.get(Shift.SHIFT_STOP);
+
+        
+        if(day != shiftStart.getDay())
+            day = shiftStart.getDay();
         
         if(day != shiftStart.getDay())
             day = shiftStart.getDay();

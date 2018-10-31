@@ -22,6 +22,9 @@ public class TASLogic {
     public static final long MILLIS_TO_HOURS = 3600000;
     public static final int MILLIS_TO_SECS = 1000;
     
+    public static final int NUM_DAYS = 7;
+    public static final int WORK_WEEK = 5;
+    
     public static int calculateTotalMinutes(ArrayList<Punch> punchList,Shift shift){
         
         /*
@@ -74,16 +77,10 @@ public class TASLogic {
     }
     
     public static Timestamp forceXafterY(Timestamp x, Timestamp y){
-        while(x.before(y)){
+        if(x.before(y)){
             x = new Timestamp(x.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
         }
         
-        return x;
-    }
-    public static Timestamp forceXbeforeY(Timestamp x, Timestamp y){
-        while(x.after(y)){
-            x = new Timestamp(x.getTime() - 24*TASLogic.MILLIS_TO_HOURS);
-        }
         return x;
     }
     
@@ -109,5 +106,26 @@ public class TASLogic {
         
         String json = JSONValue.toJSONString(jsonData);
         return json;
+    }
+    public static double calculateAbsenteeism(ArrayList<Punch> punchList, Shift s){
+        double percentage = 0;
+        
+        int shiftLength = s.getShiftLength();
+        
+        double minutesWorked = calculateTotalMinutes(punchList,s);
+        double minutesRequired = shiftLength * WORK_WEEK;
+        
+       /* System.out.println(minutesWorked);
+        System.out.println(minutesRequired);
+        System.out.println(minutesWorked/minutesRequired);
+        
+        for(Punch p: punchList){
+            System.out.println(p.printAdjustedTimestamp());
+        }*/
+        
+        percentage = 100 - ((minutesWorked/minutesRequired)*100);
+        
+        
+        return percentage;
     }
 }

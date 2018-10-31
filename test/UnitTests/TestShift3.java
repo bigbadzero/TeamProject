@@ -8,18 +8,21 @@ import java.sql.Timestamp;
 
 public class TestShift3{
 	private TASDatabase db;
-        private Badge badge;
-        private Shift s4;
+
 	
 	@Before
 	public void setup(){
 		db = new TASDatabase();
-                badge = db.getBadge("TESTMAN1");
-                s4 = db.getShift(badge);
+
 	}
 	
 	@Test
 	public void testFirstDay(){
+
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
+
 		
                 GregorianCalendar gc1 = new GregorianCalendar(2018,9,29,22,29);
                 Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
@@ -40,6 +43,9 @@ public class TestShift3{
 	}
 	@Test
 	public void testSecondDay(){
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
 	
 		GregorianCalendar gc1 = new GregorianCalendar(2018,9,30,22,30);
                 Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
@@ -63,6 +69,11 @@ public class TestShift3{
 	@Test
 	public void testThirdDay(){
             
+
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
+            
+
 		GregorianCalendar gc1 = new GregorianCalendar(2018,9,31,22,31);
                 Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
                 GregorianCalendar gc2 = new GregorianCalendar(2018,10,1,6,56);
@@ -83,6 +94,12 @@ public class TestShift3{
 	
 	@Test
 	public void testFourthDay(){
+
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
+            
+
 		GregorianCalendar gc1 = new GregorianCalendar(2018,10,1,22,40);
                 Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
                 GregorianCalendar gc2 = new GregorianCalendar(2018,10,2,6,50);
@@ -103,6 +120,11 @@ public class TestShift3{
 	
 	@Test
 	public void testFifthDay(){
+
+            
+            Badge badge = db.getBadge("TESTMAN1");
+            Shift s4 = db.getShift(badge);
+            
 		GregorianCalendar gc1 = new GregorianCalendar(2018,10,2,22,30);
                 Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
                 
