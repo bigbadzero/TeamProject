@@ -41,12 +41,37 @@ public class TASLogic {
         boolean lunchOut = false;
         boolean lunchIn = false;
         
+        long currentDayMillis = 0;
+        int currentDay = punchList.get(0).getOriginaltimestamp().getDay();
+        boolean multipleDays = false;
+        
         //convert instance fields of shift into milliseconds
         long lunchDeduct = shift.getLunchDeduct() * TASLogic.MILLIS_TO_MIN;
         long lunchLength = shift.getLunchLength() * TASLogic.MILLIS_TO_MIN;
         
         for(Punch p: punchList){
             p.adjust(shift);
+            
+            System.out.println(p.printAdjustedTimestamp());
+            
+            
+            //System.out.println(previous.getOriginaltimestamp().getDay() != p.getOriginaltimestamp().getDay());
+            if(currentDay != p.getOriginaltimestamp().getDay()){
+                currentDay = p.getOriginaltimestamp().getDay();
+                System.out.println("HEre");
+                multipleDays = true;
+                if(!lunchOut && !lunchIn){
+                    if(currentDayMillis> lunchDeduct){
+                        //System.out.println("Before deduct: " + totalMillis/MILLIS_TO_MIN);
+                        totalMillis -= lunchLength;
+                        currentDayMillis = 0;
+                        //System.out.println("After Deduct: "+totalMillis/MILLIS_TO_MIN);
+                        lunchOut = lunchIn = false;
+                    }
+                }
+            }
+                    
+            
             
             if(p.getPunchtypeid() == Punch.CLOCKED_IN && !inPair){
                 previous = p;
@@ -55,6 +80,7 @@ public class TASLogic {
             else if(inPair){
                 if(p.getPunchtypeid() == Punch.CLOCKED_OUT){
                     totalMillis += p.getAdjustedtimestamp().getTime() - previous.getAdjustedtimestamp().getTime();
+                    currentDayMillis += p.getAdjustedtimestamp().getTime() - previous.getAdjustedtimestamp().getTime();
                     inPair = false;
                 }
                 else if(p.getPunchtypeid() == Punch.TIMED_OUT)
@@ -65,10 +91,14 @@ public class TASLogic {
                 lunchOut = true;
             else if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_STOP))
                 lunchIn = true;
-        }
-        if(!lunchOut && !lunchIn){
-            if(totalMillis > lunchDeduct)
-                totalMillis -= lunchLength;
+            
+            
+        }    
+        if(!multipleDays){
+            if(!lunchOut && !lunchIn){
+                if(totalMillis > lunchDeduct)
+                    totalMillis -= lunchLength;
+            }
         }
     
         totalMinutes = (new Long(totalMillis/TASLogic.MILLIS_TO_MIN)).intValue();
@@ -111,20 +141,27 @@ public class TASLogic {
         double percentage = 0;
         
         int shiftLength = s.getShiftLength();
+        int daysWorked = 1;
+        
+        
+        for(int i = 1; i < punchList.size(); ++i){
+            Punch previous = punchList.get(i-1);
+            Punch current = punchList.get(i);
+            
+            if(current.getAdjustedtimestamp().getDay() != previous.getAdjustedtimestamp().getDay()){
+                ++daysWorked;
+            }
+            
+        }
+        //System.out.println(daysWorked);
         
         double minutesWorked = calculateTotalMinutes(punchList,s);
         double minutesRequired = shiftLength * WORK_WEEK;
         
-       /* System.out.println(minutesWorked);
+        System.out.println(minutesWorked);
         System.out.println(minutesRequired);
-        System.out.println(minutesWorked/minutesRequired);
-        
-        for(Punch p: punchList){
-            System.out.println(p.printAdjustedTimestamp());
-        }*/
         
         percentage = 100 - ((minutesWorked/minutesRequired)*100);
-        
         
         return percentage;    }
 }

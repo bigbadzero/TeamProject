@@ -11,6 +11,7 @@ package teamproject;
  */
 import java.util.ArrayList;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class TeamProject {
@@ -24,18 +25,13 @@ public class TeamProject {
         
          /* Get Punch */
         
-        Punch p = db.getPunch(3634);
+        Punch p = db.getPunch(4943);
         Badge b = db.getBadge(p.getBadgeid());
         Shift s = db.getShift(b);
         
         /* Get Pay Period Punch List */
         
-        System.out.println(p);
-        System.out.println(b);
-        System.out.println(s);
-        
         long ts = p.getOriginaltimestamp().getTime();
-        System.out.println(ts);
         ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, ts);
 
         /* Adjust Punches */
@@ -48,14 +44,18 @@ public class TeamProject {
         
         double percentage = TASLogic.calculateAbsenteeism(punchlist, s);
         
-        System.out.println(percentage);
-        
         /* Insert Absenteeism Into Database */
         
-        Absenteeism a1 = new Absenteeism(b.getId(), ts, percentage);
+       // Absenteeism a1 = new Absenteeism(b.getId(), ts, percentage);
         
-        System.out.println(a1.getPayPeriod().getTimeInMillis());
+       // System.out.println(a1.toString());
         
         //db.insertAbsenteeism(a1);
+        
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+        Absenteeism a = new Absenteeism("TESTMAN1",gc.getTimeInMillis(),2144.33);
+        db.insertAbsenteeism(a);
+        db.getAbsenteeism("TESTMAN1", gc.getTimeInMillis());
     }
 }

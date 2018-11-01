@@ -7,6 +7,7 @@ package teamproject;
 
 
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -274,14 +275,17 @@ public class TASDatabase {
     
     public void insertAbsenteeism(Absenteeism a){
         String check = "SELECT * FROM absenteeism WHERE badgeid =? AND payperiod = ?;";
-        String update = "UPDATE absenteeism SET percentage = ? WHERE badgeid = ? AND payperiod = ?;";
+        String update = "UPDATE absenteeism SET percentage = ?, payperiod = payperiod WHERE badgeid = ? AND payperiod = ?;";
         String newRecord = "INSERT INTO absenteeism (badgeid,payperiod,percentage) VALUES (?,?,?);";
         
         String badgeId = a.getBadgeId();
         long ts = a.getPayPeriod().getTimeInMillis();
-        double percentage = a.getPercentage();
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ts);
         
+        String decimal = new DecimalFormat("#0.00").format(a.getPercentage());
+        double percentage = Double.valueOf(decimal);
+        
+         //System.out.println(date);
         try{
             PreparedStatement pst1 = conn.prepareStatement(check);
             pst1.setString(1, badgeId);

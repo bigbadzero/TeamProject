@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 
 public class Absenteeism {
     
@@ -26,7 +27,6 @@ public class Absenteeism {
     public Absenteeism(String badgeId, long ts, double percentage){
         this.badgeId = badgeId;
         
-
         payPeriod = new GregorianCalendar(); 
         payPeriod.setTimeInMillis(getPayPeriodStart(ts));
         
@@ -36,10 +36,11 @@ public class Absenteeism {
     public String toString(){
         String output = "";
         String date = new SimpleDateFormat(DATE_FORMAT).format(payPeriod.getTimeInMillis());
+        String decimal = new DecimalFormat("#0.00").format(percentage);
         
         output += "#" + badgeId;
         output += " (Pay Period Starting " + date + "): ";
-        output += percentage + "%";
+        output += decimal + "%";
         
         return output;
     }
