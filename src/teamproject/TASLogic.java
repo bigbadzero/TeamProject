@@ -40,6 +40,7 @@ public class TASLogic {
         boolean inPair = false;
         boolean lunchOut = false;
         boolean lunchIn = false;
+
         
         long currentDayMillis = 0;
         int currentDay = punchList.get(0).getOriginaltimestamp().getDay();
@@ -50,6 +51,8 @@ public class TASLogic {
         long lunchLength = shift.getLunchLength() * TASLogic.MILLIS_TO_MIN;
         
         for(Punch p: punchList){
+
+            
             p.adjust(shift);
             
             System.out.println(p.printAdjustedTimestamp());
@@ -94,12 +97,12 @@ public class TASLogic {
             
             
         }    
-        if(!multipleDays){
+        //if(!multipleDays){
             if(!lunchOut && !lunchIn){
-                if(totalMillis > lunchDeduct)
+                if(currentDayMillis > lunchDeduct)
                     totalMillis -= lunchLength;
             }
-        }
+        //}
     
         totalMinutes = (new Long(totalMillis/TASLogic.MILLIS_TO_MIN)).intValue();
         
