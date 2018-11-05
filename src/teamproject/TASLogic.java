@@ -14,6 +14,7 @@ import java.util.HashMap;
 import org.json.simple.*;
 import java.lang.Number;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 
 public class TASLogic {
@@ -119,11 +120,35 @@ public class TASLogic {
     
     public static String getPunchListAsJSON(ArrayList<Punch> dailypunchlist){
         
-        ArrayList<HashMap<String, String>> jsonData = new ArrayList<>();
-        HashMap<String, String>  punchData;
+        ArrayList<HashMap<String, String>> jsonData = getPunchListData(dailypunchlist);
         
-        for(int i = 0; i < dailypunchlist.size(); i++){
-            Punch punch = dailypunchlist.get(i);
+        String json = JSONValue.toJSONString(jsonData);
+        return json;
+    }
+    public static String getPunchListPlusTotalsAsJSON(ArrayList<Punch> punchList,Shift s){
+        ArrayList<HashMap<String, String>> jsonData = getPunchListData(punchList);
+        
+        double absenteeism = calculateAbsenteeism(punchList,s);
+        String absenteeismString = new DecimalFormat("#0.00").format(absenteeism) + "%";
+        HashMap<String,String> punchListAbsenteeism = new HashMap<>();
+        punchListAbsenteeism.put("absenteeism", absenteeismString);
+        jsonData.add(punchListAbsenteeism);
+        
+        int totalMinutes = calculateTotalMinutes(punchList,s);
+        HashMap<String,String> punchListMin = new HashMap<>();
+        punchListMin.put("totalminutes", String.valueOf(totalMinutes));
+        jsonData.add(punchListMin);
+        
+        String json = JSONValue.toJSONString(jsonData);
+        return json;
+        
+    }
+    public static ArrayList<HashMap<String,String>> getPunchListData(ArrayList<Punch> punchList){
+        ArrayList<HashMap<String,String>> punchListData = new ArrayList<>();
+        HashMap<String,String> punchData;
+        
+        for(int i = 0; i < punchList.size(); ++i){
+            Punch punch = punchList.get(i);
             punchData = new HashMap<>();
             
             punchData.put("id", String.valueOf(punch.getId()));
@@ -134,11 +159,10 @@ public class TASLogic {
             punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTime()));
             punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedtimestamp().getTime()));
             
-            jsonData.add(punchData);
+            punchListData.add(punchData);
         }
         
-        String json = JSONValue.toJSONString(jsonData);
-        return json;
+        return punchListData;
     }
     public static double calculateAbsenteeism(ArrayList<Punch> punchList, Shift s){
         double percentage = 0;
