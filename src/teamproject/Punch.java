@@ -113,7 +113,7 @@ public class Punch {
             long afterDiff = nearestAfter.getTime() - ots.getTime();
             
             if(otsNoSecs.equals(nearestBefore) || ots.equals(nearestAfter)){
-                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    adjustedTimestamp = new Timestamp(otsNoSecs.getTime());
                     eventData = EVENT_DATA_NONE;
             }
             else if(beforeDiff < afterDiff){
@@ -213,7 +213,7 @@ public class Punch {
                 long afterDiff = nearestAfter.getTime() - ots.getTime();
                
                 if(otsNoSecs.equals(nearestBefore) || ots.equals(nearestAfter)){
-                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    adjustedTimestamp = new Timestamp(otsNoSecs.getTime());
                     eventData = EVENT_DATA_NONE;
                 }
                 
