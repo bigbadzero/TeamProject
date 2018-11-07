@@ -128,16 +128,16 @@ public class TASLogic {
     public static String getPunchListPlusTotalsAsJSON(ArrayList<Punch> punchList,Shift s){
         ArrayList<HashMap<String, String>> jsonData = getPunchListData(punchList);
         
+        HashMap<String, String> totalData = new HashMap();
+        
         double absenteeism = calculateAbsenteeism(punchList,s);
         String absenteeismString = new DecimalFormat("#0.00").format(absenteeism) + "%";
-        HashMap<String,String> punchListAbsenteeism = new HashMap<>();
-        punchListAbsenteeism.put("absenteeism", absenteeismString);
-        jsonData.add(punchListAbsenteeism);
+        totalData.put("absenteeism", absenteeismString);
+        
         
         int totalMinutes = calculateTotalMinutes(punchList,s);
-        HashMap<String,String> punchListMin = new HashMap<>();
-        punchListMin.put("totalminutes", String.valueOf(totalMinutes));
-        jsonData.add(punchListMin);
+        totalData.put("totalminutes", String.valueOf(totalMinutes));
+        jsonData.add(totalData);
         
         String json = JSONValue.toJSONString(jsonData);
         return json;
