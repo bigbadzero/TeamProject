@@ -96,9 +96,13 @@ public class TASDatabase {
     public Shift getShift(int id){
         Shift shift = null;
         try{
-            PreparedStatement pst = conn.prepareStatement("SELECT description, `interval`, graceperiod, dock, lunchdeduct, "
-                    + "UNIX_TIMESTAMP(`start`) AS `start`, UNIX_TIMESTAMP(`stop`) AS `stop`, UNIX_TIMESTAMP(lunchstart) AS lunchstart, "
-                    + "UNIX_TIMESTAMP(lunchstop) AS lunchstop FROM shift WHERE id=?;");
+            PreparedStatement pst = conn.prepareStatement("SELECT shift.id, shift.description, dailyschedule.graceperiod, dailyschedule.dock, dailyschedule.`interval`,\n" +
+                "UNIX_TIMESTAMP(dailyschedule.`start` ) AS `start`, UNIX_TIMESTAMP(dailyschedule.`stop` ) AS `stop`,\n" +
+                "UNIX_TIMESTAMP(dailyschedule.lunchstart) AS lunchstart, UNIX_TIMESTAMP(dailyschedule.lunchstop) AS lunchstop, dailyschedule.lunchdeduct\n" +
+                "FROM shift\n" +
+                "INNER JOIN dailyschedule\n" +
+                "ON shift.dailyscheduleid = dailyschedule.id\n" +
+                "WHERE shift.id = ?;");
             pst.setInt(1, id);
             
             ResultSet result = pst.executeQuery();
@@ -114,8 +118,8 @@ public class TASDatabase {
                 Timestamp lunchStop = new Timestamp(result.getLong("lunchstop") *1000);
                 //lunch length
                 int lunchDeduct = result.getInt("lunchdeduct");
-
-                shift = new Shift(id,desc, start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
+                DailySchedule defaultschedule = new DailySchedule(start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
+                shift = new Shift(id,desc,defaultschedule);
             }
             
             result.close();
