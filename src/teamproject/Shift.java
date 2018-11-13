@@ -9,6 +9,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.lang.Number;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class Shift {
@@ -22,6 +23,7 @@ public class Shift {
     private int id;
     private String description;
     private DailySchedule defaultschedule;
+    private HashMap<Integer, DailySchedule> scheduleList;
     
     
     
@@ -29,7 +31,20 @@ public class Shift {
         this.id = id;
         this.description = description;
         this.defaultschedule = defaultschedule;
+        
+        this.initScheduleList(defaultschedule);
        
+    }
+    
+    private void initScheduleList(DailySchedule defaultschedule){
+        scheduleList = new HashMap<>();
+        
+        scheduleList.put(Calendar.MONDAY, defaultschedule);
+        scheduleList.put(Calendar.TUESDAY, defaultschedule);
+        scheduleList.put(Calendar.WEDNESDAY, defaultschedule);
+        scheduleList.put(Calendar.THURSDAY, defaultschedule);
+        scheduleList.put(Calendar.FRIDAY, defaultschedule);
+        
     }
     
     public String toString(){
