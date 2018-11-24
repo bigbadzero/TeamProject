@@ -152,6 +152,81 @@ public class TASDatabase {
         
         return shift;
     }
+    
+    public Shift getShift(Badge badge, long ts){
+        Shift shift = this.getShift(badge);
+        
+        String badgeId = badge.getId();
+        String date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(ts);
+        
+        try{
+            String sql1 = "SELECT * FROM scheduleoverride "
+                + "WHERE badgeid IS NULL AND `start` < ? AND `end` IS NULL;";
+            PreparedStatement pst1 = conn.prepareStatement(sql1);
+            pst1.setString(1, date);
+            
+            ResultSet result1 = pst1.executeQuery();
+            while(result1.next()){
+                int scheduleId = result1.getInt("dailyscheduleid");
+                int day = result1.getInt("day");
+                
+                this.updateDailySchedule(shift, scheduleId, day);
+                
+            }
+            result1.close();
+            pst1.close();
+        }
+        catch(Exception e){System.err.println(e.toString());}
+        
+        
+        return shift;
+    }
+    public Shift getShift(Badge badge, Punch punch){
+        long ts = punch.getOriginaltimestamp().getTime();
+        
+        Shift shift = this.getShift(badge,ts);
+        
+        return shift;
+    }
+    
+    public void updateDailySchedule(Shift shift, int dailyScheduleId, int day){
+        
+        String sql = "SELECT *, UNIX_TIMESTAMP(`start`) AS `start`, UNIX_TIMESTAMP(`stop`) AS `stop`, "
+                + "UNIX_TIMESTAMP(`lunchstart`) AS `lunchstart`, UNIX_TIMESTAMP(`lunchstop`) AS `lunchstop` FROM dailyschedule WHERE id = ?;";
+        
+        try{
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, dailyScheduleId);
+            
+            ResultSet result = pst.executeQuery();
+            
+            if(result.next()){
+                Timestamp start = new Timestamp(result.getLong("start") * TASLogic.MILLIS_TO_SECS);
+                Timestamp stop = new Timestamp(result.getLong("stop") * TASLogic.MILLIS_TO_SECS);
+                int interval = result.getInt("interval");
+                int graceperiod = result.getInt("graceperiod");
+                int dock = result.getInt("dock");
+                Timestamp lunchStart = new Timestamp(result.getLong("lunchstart") * TASLogic.MILLIS_TO_SECS);
+                Timestamp lunchStop = new Timestamp(result.getLong("lunchstop") * TASLogic.MILLIS_TO_SECS);
+                int lunchDeduct = result.getInt("lunchdeduct");
+                
+                shift.setStart(day, start);
+                shift.setStop(day, stop);
+                shift.setInterval(day, interval);
+                shift.setGracePeriod(day, graceperiod);
+                shift.setDock(day, dock);
+                shift.setLunchStart(day, lunchStart);
+                shift.setLunchStop(day, lunchStop);
+                shift.setLunchDeduct(day, lunchDeduct);
+            }
+            result.close();
+            pst.close();
+        }
+        catch(Exception e){System.err.println(e.toString());}
+        
+        
+    }
+    
     public int insertPunch(Punch punch){
         String badgeId = punch.getBadge().getId();
         int terminalId = punch.getTerminalid();
