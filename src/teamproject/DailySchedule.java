@@ -39,13 +39,7 @@ public class DailySchedule {
         this.lunchStop = lunchStop;
         this.lunchDeduct = lunchDeduct;
         
-        Long lunchLength = (lunchStop.getTime() - lunchStart.getTime())/TASLogic.MILLIS_TO_MIN;
-        this.lunchLength = lunchLength.intValue();
-        
-        Timestamp shiftStop = TASLogic.forceXafterY(stop, start);
-        Long shiftLength = (shiftStop.getTime() - start.getTime())/TASLogic.MILLIS_TO_MIN;
-        shiftLength -= lunchLength;
-        this.shiftLength = shiftLength.intValue();
+        this.updateLengthVariables();
     }
     
     public String toString(String description){
@@ -142,6 +136,16 @@ public class DailySchedule {
         return shiftValues;
     }
     
+    private void updateLengthVariables(){
+        Long lunchLength = (lunchStop.getTime() - lunchStart.getTime())/TASLogic.MILLIS_TO_MIN;
+        this.lunchLength = lunchLength.intValue();
+        
+        Timestamp shiftStop = TASLogic.forceXafterY(stop, start);
+        Long shiftLength = (shiftStop.getTime() - start.getTime())/TASLogic.MILLIS_TO_MIN;
+        shiftLength -= lunchLength;
+        this.shiftLength = shiftLength.intValue();
+    }
+    
     public Timestamp getStart() {
         return start;
     }
@@ -183,10 +187,13 @@ public class DailySchedule {
     
     public void setStart(Timestamp start) {
         this.start = start;
+        
+        this.updateLengthVariables();
     }
 
     public void setStop(Timestamp stop) {
         this.stop = stop;
+        this.updateLengthVariables();
     }
 
     public void setInterval(int interval) {
@@ -203,10 +210,12 @@ public class DailySchedule {
 
     public void setLunchStart(Timestamp lunchStart) {
         this.lunchStart = lunchStart;
+        this.updateLengthVariables();
     }
 
     public void setLunchStop(Timestamp lunchStop) {
         this.lunchStop = lunchStop;
+        this.updateLengthVariables();
     }
 
     public void setLunchLength(int lunchLength) {

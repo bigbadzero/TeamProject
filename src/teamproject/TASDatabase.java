@@ -160,24 +160,84 @@ public class TASDatabase {
         String date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(ts);
         
         try{
-            String sql1 = "SELECT * FROM scheduleoverride "
-                + "WHERE badgeid IS NULL AND `start` < ? AND `end` IS NULL;";
-            PreparedStatement pst1 = conn.prepareStatement(sql1);
-            pst1.setString(1, date);
             
-            ResultSet result1 = pst1.executeQuery();
-            while(result1.next()){
-                int scheduleId = result1.getInt("dailyscheduleid");
-                int day = result1.getInt("day");
+            //Checking for recurring overrides for all employees
+            String sql = "SELECT * FROM scheduleoverride "
+                + "WHERE badgeid IS NULL AND `start` <= ? AND `end` IS NULL;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, date);
+            
+            ResultSet result = pst.executeQuery();
+            while(result.next()){
+                int scheduleId = result.getInt("dailyscheduleid");
+                int day = result.getInt("day");
                 
                 this.updateDailySchedule(shift, scheduleId, day);
                 
             }
-            result1.close();
-            pst1.close();
+            result.close();
+            pst.close();
+        }
+        catch(Exception e){System.err.println(e.toString());}
+            
+        try{
+            //Checking for recurring overrides for a singular employee
+            String sql = "SELECT * FROM scheduleoverride "
+                    + "WHERE badgeid = ? and `start` <= ? AND `end` IS NULL;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, badgeId);
+            pst.setString(2, date);
+            
+            ResultSet result = pst.executeQuery();
+            while(result.next()){
+                int scheduleId = result.getInt("dailyscheduleid");
+                int day = result.getInt("day");
+                
+                this.updateDailySchedule(shift, scheduleId, day);
+            }
+            result.close();
+            pst.close();
         }
         catch(Exception e){System.err.println(e.toString());}
         
+        try{
+            String sql = "SELECT * FROM scheduleoverride "
+                    + "WHERE badgeid IS NULL AND `start` <= ? AND `end` >= ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, date);
+            pst.setString(2, date);
+            
+            ResultSet result = pst.executeQuery();
+            while(result.next()){
+                int scheduleId = result.getInt("dailyscheduleid");
+                int day = result.getInt("day");
+                
+                this.updateDailySchedule(shift, scheduleId, day);
+            }
+            result.close();
+            pst.close();
+        }
+        catch(Exception e){System.err.println(e.toString());}
+        
+        try{
+            String sql = "SELECT * FROM scheduleoverride "
+                    + "WHERE badgeid = ? AND `start` <= ? AND `end` >= ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, badgeId);
+            pst.setString(2, date);
+            pst.setString(3, date);
+            
+            ResultSet result = pst.executeQuery();
+            while(result.next()){
+                int scheduleId = result.getInt("scheduleid");
+                int day = result.getInt("day");
+                
+                this.updateDailySchedule(shift, scheduleId, day);
+            }
+            result.close();
+            pst.close();
+        }
+        catch(Exception e){System.err.println(e.toString());}
         
         return shift;
     }
