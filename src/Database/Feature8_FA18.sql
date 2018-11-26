@@ -1,7 +1,7 @@
 -- MySQL Administrator dump 1.4
 --
 -- ------------------------------------------------------
--- Server version	5.7.23-log
+-- Server version	5.7.17-log
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -208,7 +208,7 @@ CREATE TABLE `dailyschedule` (
   `lunchstop` time NOT NULL,
   `lunchdeduct` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `dailyschedule`
@@ -219,7 +219,9 @@ INSERT INTO `dailyschedule` (`id`,`start`,`stop`,`interval`,`graceperiod`,`dock`
  (1,'07:00:00','15:30:00',15,5,15,'12:00:00','12:30:00',360),
  (2,'12:00:00','20:30:00',15,5,15,'16:30:00','17:00:00',360),
  (3,'07:00:00','15:30:00',15,5,15,'11:30:00','12:00:00',360),
- (4,'22:30:00','07:00:00',15,5,15,'02:30:00','03:00:00',360);
+ (4,'22:30:00','07:00:00',15,5,15,'02:30:00','03:00:00',360),
+ (5,'00:00:00','00:00:00',15,5,15,'00:00:00','00:00:00',360),
+ (6,'07:00:00','14:30:00',15,5,15,'12:00:00','12:30:00',360);
 /*!40000 ALTER TABLE `dailyschedule` ENABLE KEYS */;
 
 
@@ -462,7 +464,7 @@ CREATE TABLE `punch` (
   CONSTRAINT `FK_punch_1` FOREIGN KEY (`badgeid`) REFERENCES `badge` (`id`),
   CONSTRAINT `FK_punch_2` FOREIGN KEY (`punchtypeid`) REFERENCES `punchtype` (`id`),
   CONSTRAINT `FK_punch_3` FOREIGN KEY (`terminalid`) REFERENCES `terminal` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6894 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6897 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `punch`
@@ -5432,7 +5434,7 @@ INSERT INTO `punch` (`id`,`terminalid`,`badgeid`,`originaltimestamp`,`punchtypei
  (5412,105,'58EB7EA1','2018-09-21 15:34:32',0),
  (5413,107,'8C4CE4AC','2018-09-21 15:34:35',0),
  (5414,104,'A5F194EB','2018-09-21 15:34:36',0),
- (5415,101,'3282F212','2018-09-21 15:34:36',0),
+ (5415,101,'3282F212','2018-09-21 14:34:36',0),
  (5416,103,'99F0C0FA','2018-09-21 15:34:39',0),
  (5417,107,'E880B82A','2018-09-21 15:34:42',0),
  (5418,105,'95497F63','2018-09-21 15:34:43',0),
@@ -6297,7 +6299,7 @@ INSERT INTO `punch` (`id`,`terminalid`,`badgeid`,`originaltimestamp`,`punchtypei
  (6310,101,'AC239E44','2018-09-28 15:31:49',0),
  (6311,105,'08D745A6','2018-09-28 15:31:56',0),
  (6312,105,'58EB7EA1','2018-09-28 15:32:04',0),
- (6313,101,'3282F212','2018-09-28 15:32:05',0),
+ (6313,101,'3282F212','2018-09-28 14:32:05',0),
  (6314,102,'C4F37EFF','2018-09-28 15:32:09',0),
  (6315,105,'E70AD3D2','2018-09-28 15:32:11',0),
  (6316,103,'CEA28723','2018-09-28 15:32:11',0),
@@ -6504,13 +6506,17 @@ CREATE TABLE `scheduleoverride` (
   KEY `FK_scheduleoverride_2` (`dailyscheduleid`),
   CONSTRAINT `FK_scheduleoverride_1` FOREIGN KEY (`badgeid`) REFERENCES `badge` (`id`),
   CONSTRAINT `FK_scheduleoverride_2` FOREIGN KEY (`dailyscheduleid`) REFERENCES `dailyschedule` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `scheduleoverride`
 --
 
 /*!40000 ALTER TABLE `scheduleoverride` DISABLE KEYS */;
+INSERT INTO `scheduleoverride` (`id`,`start`,`end`,`badgeid`,`day`,`dailyscheduleid`) VALUES 
+ (5,'2018-09-02 00:00:00','2018-09-08 23:59:59',NULL,2,5),
+ (6,'2018-09-09 00:00:00','2018-09-15 23:59:59','0FFA272B',4,5),
+ (7,'2018-09-16 00:00:00',NULL,'3282F212',6,6);
 /*!40000 ALTER TABLE `scheduleoverride` ENABLE KEYS */;
 
 
