@@ -58,10 +58,9 @@ public class TASDatabase {
                 Badge badge = this.getBadge(badgeId);
             
                 ts = ts*1000;
-                Timestamp ots = new Timestamp(ts);
+                GregorianCalendar ots = new GregorianCalendar();
+                ots.setTimeInMillis(ts);
             
-            
-
                 punch = new Punch(badge,id, terminalId,ots,ptid);
             }
             
@@ -109,14 +108,23 @@ public class TASDatabase {
             if(result.next()){
                 String desc = result.getString("description");
             
-                Timestamp start = new Timestamp(result.getLong("start") *1000);
-                Timestamp stop = new Timestamp(result.getLong("stop") *1000);
+                GregorianCalendar start = new GregorianCalendar();
+                start.setTimeInMillis(result.getLong("start") *1000);
+                
+                GregorianCalendar stop = new GregorianCalendar();
+                stop.setTimeInMillis(result.getLong("stop") *1000);
+                
                 int interval = result.getInt("interval");
                 int gracePeriod = result.getInt("graceperiod");
                 int dock = result.getInt("dock");
-                Timestamp lunchStart = new Timestamp(result.getLong("lunchstart") *1000);
-                Timestamp lunchStop = new Timestamp(result.getLong("lunchstop") *1000);
-                //lunch length
+                
+                GregorianCalendar lunchStart = new GregorianCalendar();
+                lunchStart.setTimeInMillis(result.getLong("lunchstart") *1000);
+                
+                GregorianCalendar lunchStop = new GregorianCalendar();
+                lunchStop.setTimeInMillis(result.getLong("lunchstop") *1000);
+                
+                
                 int lunchDeduct = result.getInt("lunchdeduct");
                 DailySchedule defaultschedule = new DailySchedule(start,stop,interval,gracePeriod,dock,lunchStart,lunchStop,lunchDeduct );
                 shift = new Shift(id,desc,defaultschedule);
@@ -157,7 +165,16 @@ public class TASDatabase {
         Shift shift = this.getShift(badge);
         
         String badgeId = badge.getId();
-        String date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(ts);
+        
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTimeInMillis(ts);
+        gc.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+        gc.set(Calendar.HOUR_OF_DAY, 0);
+        gc.set(Calendar.MINUTE, 0);
+        gc.set(Calendar.SECOND, 0);
+        gc.set(Calendar.MILLISECOND, 0);
+        
+        String date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(gc.getTimeInMillis());
         
         try{
             
@@ -246,7 +263,7 @@ public class TASDatabase {
         return shift;
     }
     public Shift getShift(Badge badge, Punch punch){
-        long ts = punch.getOriginaltimestamp().getTime();
+        long ts = punch.getOriginaltimestamp().getTimeInMillis();
         
         Shift shift = this.getShift(badge,ts);
         
@@ -255,8 +272,9 @@ public class TASDatabase {
     
     public void updateDailySchedule(Shift shift, int dailyScheduleId, int day){
         
-        System.out.println("Day: " + day);
-        System.out.println(shift.getShiftLength(4));
+        //System.out.println("Day: " + day);
+        //System.out.println(shift.getShiftLength(4));
+        
         
         String sql = "SELECT *, UNIX_TIMESTAMP(`start`) AS `start`, UNIX_TIMESTAMP(`stop`) AS `stop`, "
                 + "UNIX_TIMESTAMP(`lunchstart`) AS `lunchstart`, UNIX_TIMESTAMP(`lunchstop`) AS `lunchstop` FROM dailyschedule WHERE id = ?;";
@@ -269,14 +287,28 @@ public class TASDatabase {
             //System.out.println("Update Schedule try");
             if(result.next()){
                 //System.out.println("Update Schedule if");
-                Timestamp start = new Timestamp(result.getLong("start") * TASLogic.MILLIS_TO_SECS);
-                Timestamp stop = new Timestamp(result.getLong("stop") * TASLogic.MILLIS_TO_SECS);
+                GregorianCalendar start = new GregorianCalendar();
+                start.setTimeInMillis(result.getLong("start") * TASLogic.MILLIS_TO_SECS);
+                
+                GregorianCalendar stop = new GregorianCalendar();
+                stop.setTimeInMillis(result.getLong("stop") * TASLogic.MILLIS_TO_SECS);
+                
+                
                 int interval = result.getInt("interval");
                 int graceperiod = result.getInt("graceperiod");
                 int dock = result.getInt("dock");
-                Timestamp lunchStart = new Timestamp(result.getLong("lunchstart") * TASLogic.MILLIS_TO_SECS);
-                Timestamp lunchStop = new Timestamp(result.getLong("lunchstop") * TASLogic.MILLIS_TO_SECS);
+                
+                GregorianCalendar lunchStart = new GregorianCalendar();
+                lunchStart.setTimeInMillis(result.getLong("lunchstart") * TASLogic.MILLIS_TO_SECS);
+                
+                GregorianCalendar lunchStop = new GregorianCalendar();
+                lunchStop.setTimeInMillis(result.getLong("lunchstop") * TASLogic.MILLIS_TO_SECS);
+                
+                
                 int lunchDeduct = result.getInt("lunchdeduct");
+                
+                System.out.println("ts: " +result.getLong("start") * TASLogic.MILLIS_TO_SECS);
+                System.out.println("DSI: " + dailyScheduleId);
                 
                 shift.setStart(day, start);
                 shift.setStop(day, stop);
@@ -292,7 +324,7 @@ public class TASDatabase {
         }
         catch(Exception e){System.err.println(e.toString());}
         
-        System.out.println(shift.getShiftLength(4));
+        //System.out.println(shift.getShiftLength(4));
         
         
     }
@@ -300,7 +332,7 @@ public class TASDatabase {
     public int insertPunch(Punch punch){
         String badgeId = punch.getBadge().getId();
         int terminalId = punch.getTerminalid();
-        Timestamp ots = punch.getOriginaltimestamp();
+        GregorianCalendar ots = punch.getOriginaltimestamp();
         int ptid = punch.getPunchtypeid();
         
         try{
@@ -312,7 +344,7 @@ public class TASDatabase {
                       
             pst.setInt(1,terminalId);
             pst.setString(2, badgeId);
-            pst.setString(3, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTime()));
+            pst.setString(3, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTimeInMillis()));
             pst.setInt(4,ptid);
             
             results = pst.executeUpdate();
@@ -335,9 +367,9 @@ public class TASDatabase {
         ArrayList<Punch> punchList = new ArrayList();
         
         String badgeId = b.getId();
-        Timestamp timestamp = new Timestamp(ts);
-        Timestamp followingTimestamp = new Timestamp(timestamp.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+        
+        long followingTimestamp = ts + 24*TASLogic.MILLIS_TO_HOURS;
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(ts);
         String followingDate = new SimpleDateFormat("yyyy-MM-dd").format(followingTimestamp);
         
   

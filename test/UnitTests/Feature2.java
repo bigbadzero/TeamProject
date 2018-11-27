@@ -26,6 +26,8 @@ public class Feature2 {
 
         Punch p1 = new Punch(b, 101, 1);
         
+        
+        
         /* Create Timestamp Objects */
         
         GregorianCalendar ots = new GregorianCalendar();
@@ -35,8 +37,13 @@ public class Feature2 {
         
         String badgeid = p1.getBadgeid();
         
-        ots.setTimeInMillis(p1.getOriginaltimestamp().getTime());
-        String originaltimestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTime());
+        
+        
+        ots.setTimeInMillis(p1.getOriginaltimestamp().getTimeInMillis());
+        
+        String originaltimestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTimeInMillis());
+        
+        
         
         int terminalid = p1.getTerminalid();
         int eventtypeid = p1.getPunchtypeid();
@@ -45,7 +52,9 @@ public class Feature2 {
         
         int punchid = db.insertPunch(p1);
 		
-        /* Retrieve New Punch */
+        /* Retrieve New Punch */        
+
+        
         
         Punch p2 = db.getPunch(punchid);
 		
@@ -53,9 +62,9 @@ public class Feature2 {
 
         assertEquals(badgeid, p2.getBadgeid());
 
-        rts.setTimeInMillis(p2.getOriginaltimestamp().getTime());
+        rts.setTimeInMillis(p2.getOriginaltimestamp().getTimeInMillis());
         
-        assertEquals(originaltimestamp, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rts.getTime()));
+        assertEquals(originaltimestamp, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rts.getTimeInMillis()));
         assertEquals(terminalid, p2.getTerminalid());
         assertEquals(eventtypeid, p2.getPunchtypeid());
         

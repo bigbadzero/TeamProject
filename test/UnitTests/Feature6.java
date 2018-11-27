@@ -25,7 +25,7 @@ public class Feature6 {
         
         /* Get Pay Period Punch List */
         
-        long ts = p.getOriginaltimestamp().getTime();
+        long ts = p.getOriginaltimestamp().getTimeInMillis();
         ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, ts);
 
         /* Adjust Punches */
@@ -64,7 +64,7 @@ public class Feature6 {
         
         /* Get Pay Period Punch List */
         
-        long ts = p.getOriginaltimestamp().getTime();
+        long ts = p.getOriginaltimestamp().getTimeInMillis();
         ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, ts);
 
         /* Adjust Punches */
@@ -103,7 +103,7 @@ public class Feature6 {
         
         /* Get Pay Period Punch List */
         
-        long ts = p.getOriginaltimestamp().getTime();
+        long ts = p.getOriginaltimestamp().getTimeInMillis();
         ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, ts);
 
         /* Adjust Punches */

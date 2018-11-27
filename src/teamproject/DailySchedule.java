@@ -9,7 +9,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.lang.Number;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.GregorianCalendar;
 import static teamproject.Shift.LUNCH_START;
 import static teamproject.Shift.LUNCH_STOP;
 import static teamproject.Shift.SHIFT_START;
@@ -18,18 +20,18 @@ import static teamproject.Shift.TIME_FORMAT;
 
 public class DailySchedule {
     
-    private Timestamp start;
-    private Timestamp stop;
+    private GregorianCalendar start;
+    private GregorianCalendar stop;
     private int interval;
     private int gracePeriod;
     private int dock;
-    private Timestamp lunchStart;
-    private Timestamp lunchStop;
+    private GregorianCalendar lunchStart;
+    private GregorianCalendar lunchStop;
     private int lunchLength;
     private int lunchDeduct;
     private int shiftLength;
     
-    public DailySchedule(Timestamp start, Timestamp stop, int interval, int gracePeriod, int dock, Timestamp lunchStart, Timestamp lunchStop,  int lunchDeduct){
+    public DailySchedule(GregorianCalendar start, GregorianCalendar stop, int interval, int gracePeriod, int dock, GregorianCalendar lunchStart, GregorianCalendar lunchStop,  int lunchDeduct){
         this.start = start;
         this.stop = stop;
         this.interval = interval;
@@ -46,22 +48,22 @@ public class DailySchedule {
         
         
         
-        Timestamp stop = TASLogic.forceXafterY(this.stop, start);
-        Timestamp lunchStart = TASLogic.forceXafterY(this.lunchStart, start);
-        Timestamp lunchStop = TASLogic.forceXafterY(this.lunchStop, start);
+        GregorianCalendar stop = TASLogic.forceXafterY(this.stop, start);
+        GregorianCalendar lunchStart = TASLogic.forceXafterY(this.lunchStart, start);
+        GregorianCalendar lunchStop = TASLogic.forceXafterY(this.lunchStop, start);
         
-        long startMillis = this.start.getTime();
-        long stopMillis = stop.getTime();
+        long startMillis = this.start.getTimeInMillis();
+        long stopMillis = stop.getTimeInMillis();
         long difference = (stopMillis - startMillis)/TASLogic.MILLIS_TO_MIN;
         
-        long lunchStartMillis = lunchStart.getTime();
-        long lunchStopMillis = lunchStop.getTime();
+        long lunchStartMillis = lunchStart.getTimeInMillis();
+        long lunchStopMillis = lunchStop.getTimeInMillis();
         long lunchDiff = (lunchStopMillis - lunchStartMillis)/TASLogic.MILLIS_TO_MIN;
         
-        String startHour = (new SimpleDateFormat(TIME_FORMAT)).format(start);
-        String stopHour = (new SimpleDateFormat(TIME_FORMAT)).format(stop);
-        String lunchStartHour = (new SimpleDateFormat(TIME_FORMAT)).format(lunchStart);
-        String lunchStopHour = (new SimpleDateFormat(TIME_FORMAT)).format(lunchStop);
+        String startHour = (new SimpleDateFormat(TIME_FORMAT)).format(start.getTimeInMillis());
+        String stopHour = (new SimpleDateFormat(TIME_FORMAT)).format(stop.getTimeInMillis());
+        String lunchStartHour = (new SimpleDateFormat(TIME_FORMAT)).format(lunchStart.getTimeInMillis());
+        String lunchStopHour = (new SimpleDateFormat(TIME_FORMAT)).format(lunchStop.getTimeInMillis());
         
         String output = description + ": " ;
         output += startHour + " - " + stopHour;
@@ -71,34 +73,35 @@ public class DailySchedule {
         return output;
     }
     
-    public HashMap<String,Timestamp> getParticularShiftValues(Timestamp ts){
-        HashMap<String,Timestamp> shiftValues = new HashMap();
+    public HashMap<String,GregorianCalendar> getParticularShiftValues(GregorianCalendar ts){
+        HashMap<String,GregorianCalendar> shiftValues = new HashMap();
         
-        long shiftLength = this.stop.getTime() - this.start.getTime();
+        long shiftLength = this.stop.getTimeInMillis() - this.start.getTimeInMillis();
         int lunchLength = this.lunchLength;
-        long lunchStarts = this.lunchStart.getTime() - this.start.getTime();
+        long lunchStarts = this.lunchStart.getTimeInMillis() - this.start.getTimeInMillis();
         
         long startDiff = 0;
         long stopDiff = 0;
         
-        int year = ts.getYear();
-        int month = ts.getMonth();
-        int date = ts.getDate();
+        int year = ts.get(Calendar.YEAR);
+        int month = ts.get(Calendar.MONTH);
+        int date = ts.get(Calendar.DAY_OF_MONTH);
         
-        int startHour = this.start.getHours();
-        int startMin = this.start.getMinutes();
-        Timestamp shiftStart = new Timestamp(year,month,date,startHour,startMin,0,0);
-        //Timestamp shiftStartPrevDay = new Timestamp(shiftStartCurrentDay.getTime() - 24*TASLogic.MILLIS_TO_HOURS);
+        int startHour = this.start.get(Calendar.HOUR_OF_DAY);
+        int startMin = this.start.get(Calendar.MINUTE);
+        GregorianCalendar shiftStart = new GregorianCalendar(year,month,date,startHour,startMin,0);
         
-        int lunchStartHour = this.lunchStart.getHours();
-        int lunchStartMin = this.lunchStart.getMinutes();
-        Timestamp lunchStart = new Timestamp(year,month,date,lunchStartHour,lunchStartMin,0,0);
-        Timestamp lunchStop = new Timestamp(lunchStart.getTime() + lunchLength*TASLogic.MILLIS_TO_MIN);
         
-        int stopHour = this.stop.getHours();
-        int stopMin = this.stop.getMinutes();
-        Timestamp shiftStop = new Timestamp(year,month,date,stopHour,stopMin,0,0);
-        //Timestamp shiftStopNextDay = new Timestamp(shiftStopCurrentDay.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
+        int lunchStartHour = this.lunchStart.get(Calendar.HOUR_OF_DAY);
+        int lunchStartMin = this.lunchStart.get(Calendar.MINUTE);
+        GregorianCalendar lunchStart = new GregorianCalendar(year,month,date,lunchStartHour,lunchStartMin,0);
+        GregorianCalendar lunchStop = new GregorianCalendar();
+        lunchStop.setTimeInMillis(lunchStart.getTimeInMillis() + lunchLength*TASLogic.MILLIS_TO_MIN);
+        
+        int stopHour = this.stop.get(Calendar.HOUR_OF_DAY);
+        int stopMin = this.stop.get(Calendar.MINUTE);
+        GregorianCalendar shiftStop = new GregorianCalendar(year,month,date,stopHour,stopMin,0);
+        
         
         if(shiftStop.after(shiftStart)){
             shiftValues.put(SHIFT_START, shiftStart);
@@ -108,19 +111,25 @@ public class DailySchedule {
         }
         else{
             if(ts.after(shiftStart) || ts.equals(shiftStart))
-                startDiff = ts.getTime() - shiftStart.getTime();
+                startDiff = ts.getTimeInMillis() - shiftStart.getTimeInMillis();
             else
-                startDiff = shiftStart.getTime() - ts.getTime();
+                startDiff = shiftStart.getTimeInMillis() - ts.getTimeInMillis();
 
             if(ts.after(shiftStop) || ts.equals(shiftStop))
-                stopDiff = ts.getTime() - shiftStop.getTime();
+                stopDiff = ts.getTimeInMillis() - shiftStop.getTimeInMillis();
             else
-                stopDiff = shiftStop.getTime() - ts.getTime();
+                stopDiff = shiftStop.getTimeInMillis() - ts.getTimeInMillis();
 
-            if(startDiff < stopDiff)
-                shiftStop = new Timestamp(shiftStop.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
-            else
-                shiftStart = new Timestamp(shiftStart.getTime() - 24*TASLogic.MILLIS_TO_HOURS);
+            if(startDiff < stopDiff){
+                shiftStop = new GregorianCalendar();
+                shiftStop.setTimeInMillis(shiftStop.getTimeInMillis() + 24*TASLogic.MILLIS_TO_HOURS);
+            }
+                
+            else{
+                shiftStart = new GregorianCalendar();
+                shiftStart.setTimeInMillis(shiftStart.getTimeInMillis() - 24*TASLogic.MILLIS_TO_HOURS);
+            }
+                
             
             lunchStart = TASLogic.forceXafterY(lunchStart, shiftStart);
             lunchStop = TASLogic.forceXafterY(lunchStop, lunchStart);
@@ -137,20 +146,20 @@ public class DailySchedule {
     }
     
     private void updateLengthVariables(){
-        Long lunchLength = (lunchStop.getTime() - lunchStart.getTime())/TASLogic.MILLIS_TO_MIN;
+        Long lunchLength = (lunchStop.getTimeInMillis() - lunchStart.getTimeInMillis())/TASLogic.MILLIS_TO_MIN;
         this.lunchLength = lunchLength.intValue();
         
-        Timestamp shiftStop = TASLogic.forceXafterY(stop, start);
-        Long shiftLength = (shiftStop.getTime() - start.getTime())/TASLogic.MILLIS_TO_MIN;
+        GregorianCalendar shiftStop = TASLogic.forceXafterY(stop, start);
+        Long shiftLength = (shiftStop.getTimeInMillis() - start.getTimeInMillis())/TASLogic.MILLIS_TO_MIN;
         shiftLength -= lunchLength;
         this.shiftLength = shiftLength.intValue();
     }
     
-    public Timestamp getStart() {
+    public GregorianCalendar getStart() {
         return start;
     }
 
-    public Timestamp getStop() {
+    public GregorianCalendar getStop() {
         return stop;
     }
 
@@ -166,11 +175,11 @@ public class DailySchedule {
         return dock;
     }
 
-    public Timestamp getLunchStart() {
+    public GregorianCalendar getLunchStart() {
         return lunchStart;
     }
 
-    public Timestamp getLunchStop() {
+    public GregorianCalendar getLunchStop() {
         return lunchStop;
     }
 
@@ -185,13 +194,13 @@ public class DailySchedule {
         return shiftLength;
     }
     
-    public void setStart(Timestamp start) {
+    public void setStart(GregorianCalendar start) {
         this.start = start;
         
         this.updateLengthVariables();
     }
 
-    public void setStop(Timestamp stop) {
+    public void setStop(GregorianCalendar stop) {
         this.stop = stop;
         this.updateLengthVariables();
     }
@@ -208,12 +217,12 @@ public class DailySchedule {
         this.dock = dock;
     }
 
-    public void setLunchStart(Timestamp lunchStart) {
+    public void setLunchStart(GregorianCalendar lunchStart) {
         this.lunchStart = lunchStart;
         this.updateLengthVariables();
     }
 
-    public void setLunchStop(Timestamp lunchStop) {
+    public void setLunchStop(GregorianCalendar lunchStop) {
         this.lunchStop = lunchStop;
         this.updateLengthVariables();
     }

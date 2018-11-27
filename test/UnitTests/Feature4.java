@@ -23,7 +23,7 @@ public class Feature4 {
         Badge b = db.getBadge(p.getBadgeid());
         Shift s = db.getShift(b);
         
-        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTime());
+        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTimeInMillis());
         
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);
@@ -48,7 +48,7 @@ public class Feature4 {
         Badge b = db.getBadge(p.getBadgeid());
         Shift s = db.getShift(b);
         
-        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTime());
+        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTimeInMillis());
         
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);
@@ -73,7 +73,7 @@ public class Feature4 {
         Badge b = db.getBadge(p.getBadgeid());
         Shift s = db.getShift(b);
         
-        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTime());
+        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTimeInMillis());
         
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);
@@ -98,7 +98,7 @@ public class Feature4 {
         Badge b = db.getBadge(p.getBadgeid());
         Shift s = db.getShift(b);
         
-        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTime());
+        ArrayList<Punch> dailypunchlist = db.getDailyPunchList(b, p.getOriginaltimestamp().getTimeInMillis());
         
         for (Punch punch : dailypunchlist) {
             punch.adjust(s);

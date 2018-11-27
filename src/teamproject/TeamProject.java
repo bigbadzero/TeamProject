@@ -37,34 +37,20 @@ public class TeamProject {
         gc.set(Calendar.MINUTE, 0);
         gc.set(Calendar.SECOND, 0);
         
+        Timestamp ts = new Timestamp(gc.getTimeInMillis());
+        
+        System.out.println(ts.getDay());
+        
         Shift s = db.getShift(b, gc.getTimeInMillis());
         
         /* Retrieve Punch List #1 */
         
-        ArrayList<Punch> p1 = db.getPayPeriodPunchList(b, gc.getTimeInMillis());
-        
-        /* Adjust Punches */
-        
-        for (Punch p : p1) {
-            p.adjust(s);
-        }
-        
-        /* Calculate Pay Period 09-02-2018 Absenteeism */
-        
-        double percentage = TASLogic.calculateAbsenteeism(p1, s);
-        Absenteeism a1 = new Absenteeism(b.getId(), gc.getTimeInMillis(), percentage);
-        
-
-        
-        System.out.println(a1.toString());
-        /* PART TWO */
-        
-        /* Get Shift Object for Pay Period Starting 09-09-2018 (should include temporary "Wednesday Off" override) */
         
         gc.set(Calendar.DAY_OF_MONTH, 9);
         gc.set(Calendar.MONTH, 8);
         
         s = db.getShift(b, gc.getTimeInMillis());
+        
         
         /* Retrieve Punch List #2 */
         
@@ -78,68 +64,14 @@ public class TeamProject {
         
         /* Calculate Pay Period 09-09-2018 Absenteeism */
         
-        percentage = TASLogic.calculateAbsenteeism(p2, s);
+        Double percentage = TASLogic.calculateAbsenteeism(p2, s);
         Absenteeism a2 = new Absenteeism(b.getId(), gc.getTimeInMillis(), percentage);
         
 
         
         System.out.println(a2.toString());
         
-        /* PART THREE */
         
-        /* Get Shift Object for Pay Period Starting 09-09-2018 (should NOT include temporary "Wednesday Off" override) */
-        
-        gc.set(Calendar.DAY_OF_MONTH, 9);
-        gc.set(Calendar.MONTH, 8);
-        
-        Badge b2 = db.getBadge("76B87761");
-        
-        s = db.getShift(b2, gc.getTimeInMillis());
-        
-        /* Retrieve Punch List #3 */
-        
-        ArrayList<Punch> p3 = db.getPayPeriodPunchList(b2, gc.getTimeInMillis());
-        
-        /* Adjust Punches */
-        
-        for (Punch p : p3) {
-            p.adjust(s);
-        }
-        
-        /* Calculate Pay Period 09-09-2018 Absenteeism */
-        
-        percentage = TASLogic.calculateAbsenteeism(p3, s);
-        Absenteeism a3 = new Absenteeism(b2.getId(), gc.getTimeInMillis(), percentage);
-        
-        
-        System.out.println(a3.toString());
-        
-        /* PART FOUR */
-        
-        /* Get Shift Object for Pay Period Starting 09-16-2018 (regular Shift 1 schedule) */
-        
-        gc.set(Calendar.DAY_OF_MONTH, 16);
-        gc.set(Calendar.MONTH, 8);
-        
-        s = db.getShift(b, gc.getTimeInMillis());
-        
-        /* Retrieve Punch List #4 */
-        
-        ArrayList<Punch> p4 = db.getPayPeriodPunchList(b, gc.getTimeInMillis());
-        
-        /* Adjust Punches */
-        
-        for (Punch p : p4) {
-            p.adjust(s);
-        }
-        
-        /* Calculate Pay Period 09-16-2018 Absenteeism */
-        
-        percentage = TASLogic.calculateAbsenteeism(p4, s);
-        Absenteeism a4 = new Absenteeism(b.getId(), gc.getTimeInMillis(), percentage);
-        
-        
-        System.out.println(a4.toString());
         
         
     }

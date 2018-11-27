@@ -34,7 +34,7 @@ public class Feature7 {
 		
         /* Get Daily Punch List */
         
-        ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, p.getOriginaltimestamp().getTime());
+        ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, p.getOriginaltimestamp().getTimeInMillis());
         
         /* Adjust Punches */
         
@@ -70,7 +70,7 @@ public class Feature7 {
         
         /* Get Daily Punch List */
         
-        ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, p.getOriginaltimestamp().getTime());
+        ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, p.getOriginaltimestamp().getTimeInMillis());
         
         /* Adjust Punches */
         
@@ -107,7 +107,7 @@ public class Feature7 {
         
         /* Get Daily Punch List */
         
-        ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, p.getOriginaltimestamp().getTime());
+        ArrayList<Punch> punchlist = db.getPayPeriodPunchList(b, p.getOriginaltimestamp().getTimeInMillis());
         
         /* Adjust Punches */
         

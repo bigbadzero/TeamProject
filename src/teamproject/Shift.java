@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.lang.Number;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class Shift {
@@ -69,16 +70,16 @@ public class Shift {
         }
     }
     
-    public HashMap<String,Timestamp> getParticularShiftValues(Timestamp ts){
-        HashMap<String,Timestamp> shiftValues = defaultschedule.getParticularShiftValues(ts);
+    public HashMap<String,GregorianCalendar> getParticularShiftValues(GregorianCalendar ts){
+        HashMap<String,GregorianCalendar> shiftValues = defaultschedule.getParticularShiftValues(ts);
         
         return shiftValues;
     }
     
-    public HashMap<String,Timestamp> getParticularShiftValues(int day, Timestamp ts){
+    public HashMap<String,GregorianCalendar> getParticularShiftValues(int day, GregorianCalendar ts){
         
         DailySchedule dailySchedule = scheduleList.get(day);
-        HashMap<String,Timestamp> shiftValues = dailySchedule.getParticularShiftValues(ts); 
+        HashMap<String,GregorianCalendar> shiftValues = dailySchedule.getParticularShiftValues(ts); 
         
         return shiftValues;
     }
@@ -99,19 +100,19 @@ public class Shift {
         this.description = description;
     }
     
-    public Timestamp getStart() {
+    public GregorianCalendar getStart() {
         return defaultschedule.getStart();
     }
     
-    public Timestamp getStart(int day){
+    public GregorianCalendar getStart(int day){
         return scheduleList.get(day).getStart();
     }
 
-    public Timestamp getStop() {
+    public GregorianCalendar getStop() {
         return defaultschedule.getStop();
     }
     
-    public Timestamp getStop(int day){
+    public GregorianCalendar getStop(int day){
         return scheduleList.get(day).getStop();
     }
 
@@ -137,19 +138,19 @@ public class Shift {
         return scheduleList.get(day).getDock();
     }
 
-    public Timestamp getLunchStart() {
+    public GregorianCalendar getLunchStart() {
         return defaultschedule.getLunchStart();
     }
     
-    public Timestamp getLunchStart(int day){
+    public GregorianCalendar getLunchStart(int day){
         return scheduleList.get(day).getLunchStart();
     }
 
-    public Timestamp getLunchStop() {
+    public GregorianCalendar getLunchStop() {
         return defaultschedule.getLunchStop();
     }
     
-    public Timestamp getLunchStop(int day){
+    public GregorianCalendar getLunchStop(int day){
         return scheduleList.get(day).getLunchStop();
     }
 
@@ -176,18 +177,18 @@ public class Shift {
         return scheduleList.get(day).getShiftLength();
     }
     
-    public void setStart(Timestamp start) {
+    public void setStart(GregorianCalendar start) {
         defaultschedule.setStart(start);
     }
     
-    public void setStart(int day, Timestamp start){
+    public void setStart(int day, GregorianCalendar start){
         scheduleList.get(day).setStart(start);
     }
 
-    public void setStop(Timestamp stop) {
+    public void setStop(GregorianCalendar stop) {
         defaultschedule.setStop(stop);
     }
-    public void setStop(int day, Timestamp stop){
+    public void setStop(int day, GregorianCalendar stop){
         scheduleList.get(day).setStop(stop);
     }
 
@@ -214,18 +215,18 @@ public class Shift {
         scheduleList.get(day).setDock(dock);
     }
 
-    public void setLunchStart(Timestamp lunchStart) {
+    public void setLunchStart(GregorianCalendar lunchStart) {
         defaultschedule.setLunchStart(lunchStart);
     }
-    public void setLunchStart(int day, Timestamp lunchStart){
+    public void setLunchStart(int day, GregorianCalendar lunchStart){
         scheduleList.get(day).setLunchStart(lunchStart);
     }
 
-    public void setLunchStop(Timestamp lunchStop) {
+    public void setLunchStop(GregorianCalendar lunchStop) {
         defaultschedule.setLunchStop(lunchStop);
     }
     
-    public void setLunchStop(int day, Timestamp lunchStop){
+    public void setLunchStop(int day, GregorianCalendar lunchStop){
         scheduleList.get(day).setLunchStop(lunchStop);
     }
 

@@ -16,6 +16,7 @@ import java.lang.Number;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 
 public class TASLogic {
@@ -45,7 +46,7 @@ public class TASLogic {
 
         
         long currentDayMillis = 0;
-        int currentDay = punchList.get(0).getOriginaltimestamp().getDay();
+        int currentDay = punchList.get(0).getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
         //boolean multipleDays = false;
         
         long lunchDeduct =0;
@@ -53,7 +54,7 @@ public class TASLogic {
         
         for(Punch p: punchList){
             
-            int day = p.getOriginaltimestamp().getDay();
+            int day = p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
             
             lunchDeduct = shift.getLunchDeduct(day) * TASLogic.MILLIS_TO_MIN;
             lunchLength = shift.getLunchLength(day) * TASLogic.MILLIS_TO_MIN;
@@ -65,8 +66,8 @@ public class TASLogic {
             p.adjust(shift);
             
             
-            if(currentDay != p.getOriginaltimestamp().getDay()){
-                currentDay = p.getOriginaltimestamp().getDay();
+            if(currentDay != p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK)){
+                currentDay = p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
                 
                 //multipleDays = true;
                 if(!lunchOut && !lunchIn){
@@ -88,9 +89,9 @@ public class TASLogic {
             }
             else if(inPair){
                 if(p.getPunchtypeid() == Punch.CLOCKED_OUT){
-                    totalMillis += p.getAdjustedtimestamp().getTime() - previous.getAdjustedtimestamp().getTime();
+                    totalMillis += p.getAdjustedtimestamp().getTimeInMillis() - previous.getAdjustedtimestamp().getTimeInMillis();
                     System.out.println("Mins: " + totalMillis/TASLogic.MILLIS_TO_MIN);
-                    currentDayMillis += p.getAdjustedtimestamp().getTime() - previous.getAdjustedtimestamp().getTime();
+                    currentDayMillis += p.getAdjustedtimestamp().getTimeInMillis() - previous.getAdjustedtimestamp().getTimeInMillis();
                     inPair = false;
                 }
                 else if(p.getPunchtypeid() == Punch.TIMED_OUT)
@@ -117,9 +118,10 @@ public class TASLogic {
         return totalMinutes;
     }
     
-    public static Timestamp forceXafterY(Timestamp x, Timestamp y){
+    public static GregorianCalendar forceXafterY(GregorianCalendar x, GregorianCalendar y){
         if(x.before(y)){
-            x = new Timestamp(x.getTime() + 24*TASLogic.MILLIS_TO_HOURS);
+            
+            x.setTimeInMillis(x.getTimeInMillis() + 24*TASLogic.MILLIS_TO_HOURS);
         }
         
         return x;
@@ -163,8 +165,8 @@ public class TASLogic {
             punchData.put("terminalid", String.valueOf(punch.getTerminalid()));
             punchData.put("punchtypeid",String.valueOf(punch.getPunchtypeid()));
             punchData.put("punchdata", punch.getEventdata());
-            punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTime()));
-            punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedtimestamp().getTime()));
+            punchData.put("originaltimestamp", String.valueOf(punch.getOriginaltimestamp().getTimeInMillis()));
+            punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedtimestamp().getTimeInMillis()));
             
             punchListData.add(punchData);
         }

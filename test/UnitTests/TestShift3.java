@@ -23,12 +23,12 @@ public class TestShift3{
             Shift s4 = db.getShift(badge);
 		
                 GregorianCalendar gc1 = new GregorianCalendar(2018,9,29,22,29);
-                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
+                
                 GregorianCalendar gc2 = new GregorianCalendar(2018,9,30,7,4);
-                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
+                
 		
-		Punch p1 = new Punch(badge,3342,103,clockIn,1);
-		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
+		Punch p1 = new Punch(badge,3342,103,gc1,1);
+		Punch p2 = new Punch(badge,3345,103,gc2,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
@@ -46,12 +46,12 @@ public class TestShift3{
             Shift s4 = db.getShift(badge);
 	
 		GregorianCalendar gc1 = new GregorianCalendar(2018,9,30,22,30);
-                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
+                
                 GregorianCalendar gc2 = new GregorianCalendar(2018,9,31,7,0);
-                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
+                
 		
-		Punch p1 = new Punch(badge,3342,103,clockIn,1);
-		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
+		Punch p1 = new Punch(badge,3342,103,gc1,1);
+		Punch p2 = new Punch(badge,3345,103,gc2,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
@@ -71,12 +71,10 @@ public class TestShift3{
             Shift s4 = db.getShift(badge);
             
 		GregorianCalendar gc1 = new GregorianCalendar(2018,9,31,22,31);
-                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
                 GregorianCalendar gc2 = new GregorianCalendar(2018,10,1,6,56);
-                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
 		
-		Punch p1 = new Punch(badge,3342,103,clockIn,1);
-		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
+		Punch p1 = new Punch(badge,3342,103,gc1,1);
+		Punch p2 = new Punch(badge,3345,103,gc2,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
@@ -95,12 +93,10 @@ public class TestShift3{
             Shift s4 = db.getShift(badge);
             
 		GregorianCalendar gc1 = new GregorianCalendar(2018,10,1,22,40);
-                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
                 GregorianCalendar gc2 = new GregorianCalendar(2018,10,2,6,50);
-                Timestamp clockOut = new Timestamp(gc2.getTimeInMillis());
 		
-		Punch p1 = new Punch(badge,3342,103,clockIn,1);
-		Punch p2 = new Punch(badge,3345,103,clockOut,0);  
+		Punch p1 = new Punch(badge,3342,103,gc1,1);
+		Punch p2 = new Punch(badge,3345,103,gc2,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);
@@ -119,23 +115,19 @@ public class TestShift3{
             Shift s4 = db.getShift(badge);
             
 		GregorianCalendar gc1 = new GregorianCalendar(2018,10,2,22,30);
-                Timestamp clockIn = new Timestamp(gc1.getTimeInMillis());
                 
                 GregorianCalendar gc2 = new GregorianCalendar(2018,10,3,2,31);
-                Timestamp lunchClockOut = new Timestamp(gc2.getTimeInMillis());
                 
                 GregorianCalendar gc3 = new GregorianCalendar(2018,10,3,2,54);
-                Timestamp lunchClockIn = new Timestamp(gc3.getTimeInMillis());
                 
                 GregorianCalendar gc4 = new GregorianCalendar(2018,10,3,7,0);
-                Timestamp clockOut = new Timestamp(gc4.getTimeInMillis());
                 
                 
 		
-		Punch p1 = new Punch(badge,3342,103,clockIn,1);
-                Punch p2 = new Punch(badge,3343,103,lunchClockOut,0);
-                Punch p3 = new Punch(badge,3344,103,lunchClockIn,1);
-		Punch p4 = new Punch(badge,3345,103,clockOut,0);  
+		Punch p1 = new Punch(badge,3342,103,gc1,1);
+                Punch p2 = new Punch(badge,3343,103,gc2,0);
+                Punch p3 = new Punch(badge,3344,103,gc3,1);
+		Punch p4 = new Punch(badge,3345,103,gc4,0);  
 		
 		p1.adjust(s4);
 		p2.adjust(s4);

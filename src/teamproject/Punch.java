@@ -7,6 +7,7 @@ package teamproject;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
@@ -35,8 +36,8 @@ public class Punch {
     private int id;
     private int terminalId;
     private Badge badge;
-    private Timestamp originalTimestamp;
-    private Timestamp adjustedTimestamp;
+    private GregorianCalendar originalTimestamp;
+    private GregorianCalendar adjustedTimestamp;
     private int punchTypeId;
     private String eventData;
     
@@ -46,14 +47,14 @@ public class Punch {
         this.punchTypeId = punchTypeId;
         
         this.id = 0;
-        GregorianCalendar gc = new GregorianCalendar();
-        this.originalTimestamp = new Timestamp(gc.getTimeInMillis());
+         originalTimestamp = new GregorianCalendar();
+        
         this.adjustedTimestamp = null;
         this.eventData = "";
         
     }
     
-    public Punch(Badge badge,int id, int terminalId, Timestamp ots, int ptid ){
+    public Punch(Badge badge,int id, int terminalId, GregorianCalendar ots, int ptid ){
         this.badge = badge;
         this.id = id;
         this.terminalId = terminalId;
@@ -66,8 +67,10 @@ public class Punch {
     
     public void adjust(Shift s){
         
-        Timestamp ots = originalTimestamp;
-        int day = originalTimestamp.getDay();
+        GregorianCalendar ots = originalTimestamp;
+        int day = originalTimestamp.get(Calendar.DAY_OF_WEEK);
+        
+        
   
         /*HashMap<String,Timestamp> shiftValues = s.getParticularShiftValues(ots);
         Timestamp shiftStart = shiftValues.get(Shift.SHIFT_START);
@@ -77,59 +80,73 @@ public class Punch {
         
         
         
-        HashMap<String,Timestamp> shiftValues = s.getParticularShiftValues(day,ots);
+        HashMap<String,GregorianCalendar> shiftValues = s.getParticularShiftValues(day,ots);
         
-        Timestamp shiftStart = shiftValues.get(Shift.SHIFT_START);
-        Timestamp lunchStart = shiftValues.get(Shift.LUNCH_START);
-        Timestamp lunchStop = shiftValues.get(Shift.LUNCH_STOP);
-        Timestamp shiftStop = shiftValues.get(Shift.SHIFT_STOP);
+        GregorianCalendar shiftStart = shiftValues.get(Shift.SHIFT_START);
+        GregorianCalendar lunchStart = shiftValues.get(Shift.LUNCH_START);
+        GregorianCalendar lunchStop = shiftValues.get(Shift.LUNCH_STOP);
+        GregorianCalendar shiftStop = shiftValues.get(Shift.SHIFT_STOP);
 
-        if(day != shiftStart.getDay())
-            day = shiftStart.getDay();
+        if(day != shiftStart.get(Calendar.DAY_OF_WEEK))
+            day = shiftStart.get(Calendar.DAY_OF_WEEK);
         
         int interval = s.getInterval(day) * TASLogic.MILLIS_TO_MIN;
         int gracePeriod = s.getGracePeriod(day) * TASLogic.MILLIS_TO_MIN;
         int dock = s.getDock(day) * TASLogic.MILLIS_TO_MIN;  
         
-        Timestamp shiftStartEarly = new Timestamp(shiftStart.getTime() - interval);
-        Timestamp shiftStartLate = new Timestamp(shiftStart.getTime() + interval);
-        Timestamp shiftStartGracePeriod = new Timestamp(shiftStart.getTime() + gracePeriod);
+        GregorianCalendar shiftStartEarly = new GregorianCalendar();
+        shiftStartEarly.setTimeInMillis(shiftStart.getTimeInMillis() - interval);
         
-        Timestamp shiftStopEarly = new Timestamp(shiftStop.getTime() - interval);
-        Timestamp shiftStopLate = new Timestamp(shiftStop.getTime() + interval);
-        Timestamp shiftStopGracePeriod = new Timestamp(shiftStop.getTime() - gracePeriod);
+        GregorianCalendar shiftStartLate = new GregorianCalendar();
+        shiftStartLate.setTimeInMillis(shiftStart.getTimeInMillis() + interval);
+        
+        GregorianCalendar shiftStartGracePeriod = new GregorianCalendar();
+        shiftStartGracePeriod.setTimeInMillis(shiftStart.getTimeInMillis() + gracePeriod);
+        
+        GregorianCalendar shiftStopEarly = new GregorianCalendar();
+        shiftStopEarly.setTimeInMillis(shiftStop.getTimeInMillis() - interval);
+        
+        GregorianCalendar shiftStopLate = new GregorianCalendar();
+        shiftStopLate.setTimeInMillis(shiftStop.getTimeInMillis() + interval);
+        
+        GregorianCalendar shiftStopGracePeriod = new GregorianCalendar();
+        shiftStopGracePeriod.setTimeInMillis(shiftStop.getTimeInMillis() - gracePeriod);
 
-        if((day == this.SUN) || (day == this.SAT)){
+        if((day == Calendar.SUNDAY) || (day == Calendar.SATURDAY)){
             
             /*
             Punch Occurs on a Weekend and Does Not Pertain to a Rule Set.
             Punch Will be Adjusted to the Closest Interval
             */
             
-            Timestamp nearestBefore = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),ots.getHours(),0,0,0);
-            Timestamp nearestAfter = new Timestamp(nearestBefore.getTime() + interval);
+            GregorianCalendar nearestBefore = new GregorianCalendar(ots.get(Calendar.YEAR),ots.get(Calendar.MONTH),ots.get(Calendar.DAY_OF_MONTH),ots.get(Calendar.HOUR_OF_DAY),0,0);
+            GregorianCalendar nearestAfter = new GregorianCalendar();
+            nearestAfter.setTimeInMillis(nearestBefore.getTimeInMillis() + interval);
             
-            Timestamp otsNoSecs = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),ots.getHours(),ots.getMinutes(),0,0);
+            GregorianCalendar otsNoSecs = new GregorianCalendar(ots.get(Calendar.YEAR),ots.get(Calendar.MONTH),ots.get(Calendar.DAY_OF_MONTH),ots.get(Calendar.HOUR_OF_DAY),ots.get(Calendar.MINUTE),0);
             
             while(nearestAfter.before(ots)){
                 
-                nearestBefore.setTime(nearestBefore.getTime() + interval);
-                nearestAfter.setTime(nearestAfter.getTime() + interval);   
+                nearestBefore.setTimeInMillis(nearestBefore.getTimeInMillis() + interval);
+                nearestAfter.setTimeInMillis(nearestAfter.getTimeInMillis() + interval);   
             }
             
-            long beforeDiff = ots.getTime() - nearestBefore.getTime();
-            long afterDiff = nearestAfter.getTime() - ots.getTime();
+            long beforeDiff = ots.getTimeInMillis() - nearestBefore.getTimeInMillis();
+            long afterDiff = nearestAfter.getTimeInMillis() - ots.getTimeInMillis();
             
             if(otsNoSecs.equals(nearestBefore) || ots.equals(nearestAfter)){
-                    adjustedTimestamp = new Timestamp(otsNoSecs.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(otsNoSecs.getTimeInMillis());
                     eventData = EVENT_DATA_NONE;
             }
             else if(beforeDiff < afterDiff){
-                adjustedTimestamp = new Timestamp(nearestBefore.getTime());
+                adjustedTimestamp = new GregorianCalendar();
+                adjustedTimestamp.setTimeInMillis(nearestBefore.getTimeInMillis());
                 eventData = EVENT_DATA_INTERVAL_ROUND;
             }
             else{
-                adjustedTimestamp = new Timestamp(nearestAfter.getTime());
+                adjustedTimestamp = new GregorianCalendar();
+                adjustedTimestamp.setTimeInMillis(nearestAfter.getTimeInMillis());
                 eventData = EVENT_DATA_INTERVAL_ROUND;
             }  
         }
@@ -145,16 +162,19 @@ public class Punch {
                 //Punch Occurs Within the Shift Start Period
                 
                 if(ots.before(shiftStart)){     //Punch is in the Early Interval
-                    adjustedTimestamp = new Timestamp(shiftStart.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(shiftStart.getTimeInMillis());
                     eventData = EVENT_DATA_SHIFT_START;
                 }
                 else{   //Punch is in the Late Interval
                     if(ots.before(shiftStartGracePeriod) || ots.equals(shiftStartGracePeriod)){     //Punch is Within the Grace Period
-                        adjustedTimestamp = new Timestamp(shiftStart.getTime());
+                        adjustedTimestamp = new GregorianCalendar();
+                        adjustedTimestamp.setTimeInMillis(shiftStart.getTimeInMillis());
                         eventData = EVENT_DATA_SHIFT_START;
                     }
                     else{   //Punch is Late and Will be Docked
-                        adjustedTimestamp = new Timestamp(shiftStart.getTime() + dock);                   
+                        adjustedTimestamp = new GregorianCalendar();
+                        adjustedTimestamp.setTimeInMillis(shiftStart.getTimeInMillis() + dock);
                         eventData = EVENT_DATA_SHIFT_DOCK;
                     }
                 }
@@ -164,16 +184,20 @@ public class Punch {
                 //Punch Occurs Within the Shift Stop Period
                 
                 if(ots.after(shiftStop)){   //Punch is in the Late Interval
-                    adjustedTimestamp = new Timestamp(shiftStop.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(shiftStop.getTimeInMillis());
                     eventData = EVENT_DATA_SHIFT_STOP;
+                    
                 }
                 else{   //Punch is in the Early Interval
                     if((ots.after(shiftStopGracePeriod)) || ots.equals(shiftStopGracePeriod)){  //Punch is Within the Grace Period
-                        adjustedTimestamp = new Timestamp(shiftStop.getTime());
+                        adjustedTimestamp = new GregorianCalendar();
+                        adjustedTimestamp.setTimeInMillis(shiftStop.getTimeInMillis());
                         eventData = EVENT_DATA_SHIFT_STOP;
                     }
                     else{   //Punch-Out is Early and is Docked
-                        adjustedTimestamp = new Timestamp(shiftStop.getTime() - dock); 
+                        adjustedTimestamp = new GregorianCalendar();
+                        adjustedTimestamp.setTimeInMillis(shiftStop.getTimeInMillis() - dock);
                         eventData = EVENT_DATA_SHIFT_DOCK;
                     }
                 }
@@ -183,20 +207,24 @@ public class Punch {
                 //Punch Occurs Within the Lunch Period
                 
                 if(ots.equals(lunchStart)){     
-                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(originalTimestamp.getTimeInMillis());
                     eventData = EVENT_DATA_LUNCH_START;
                 }
                 else if(ots.equals(lunchStop)){
-                    adjustedTimestamp = new Timestamp(originalTimestamp.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(originalTimestamp.getTimeInMillis());
                     eventData = EVENT_DATA_LUNCH_STOP;
                 }
                 else{    
                     if(punchTypeId == CLOCKED_OUT){     //Punch is a Clock-Out and is Pushed Back to Lunch Start
-                        adjustedTimestamp = new Timestamp(lunchStart.getTime());
+                        adjustedTimestamp = new GregorianCalendar();
+                        adjustedTimestamp.setTimeInMillis(lunchStart.getTimeInMillis());
                         eventData = EVENT_DATA_LUNCH_START;
                     }
                     else{   //Punch is a Clock-In and is Pushed Back to Lunch Stop
-                        adjustedTimestamp = new Timestamp(lunchStop.getTime());
+                        adjustedTimestamp = new GregorianCalendar();
+                        adjustedTimestamp.setTimeInMillis(lunchStop.getTimeInMillis());
                         eventData = EVENT_DATA_LUNCH_STOP;
                     }
                 }
@@ -207,30 +235,34 @@ public class Punch {
                 //Punch Does Not Occur Within a Designated Rule Set
                 //and is Set to the Nearest Interval
                 
-                Timestamp nearestBefore = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),ots.getHours(),0,0,0);
-                Timestamp nearestAfter = new Timestamp(nearestBefore.getTime() + interval);
+                GregorianCalendar nearestBefore = new GregorianCalendar(ots.get(Calendar.YEAR),ots.get(Calendar.MONTH),ots.get(Calendar.DAY_OF_MONTH),ots.get(Calendar.HOUR_OF_DAY),0,0);
+                GregorianCalendar nearestAfter = new GregorianCalendar();
+                nearestAfter.setTimeInMillis(nearestBefore.getTimeInMillis() + interval);
                 
-                Timestamp otsNoSecs = new Timestamp(ots.getYear(),ots.getMonth(),ots.getDate(),ots.getHours(),ots.getMinutes(),0,0);
+                GregorianCalendar otsNoSecs = new GregorianCalendar(ots.get(Calendar.YEAR),ots.get(Calendar.MONTH),ots.get(Calendar.DAY_OF_MONTH),ots.get(Calendar.HOUR_OF_DAY),ots.get(Calendar.MINUTE),0);
 
                 while(nearestAfter.before(ots)){
-                    nearestBefore.setTime(nearestBefore.getTime() + interval);
-                    nearestAfter.setTime(nearestAfter.getTime() + interval);
+                    nearestBefore.setTimeInMillis(nearestBefore.getTimeInMillis() + interval);
+                    nearestAfter.setTimeInMillis(nearestAfter.getTimeInMillis() + interval);
                 }
 
-                long beforeDiff = ots.getTime() - nearestBefore.getTime();
-                long afterDiff = nearestAfter.getTime() - ots.getTime();
+                long beforeDiff = ots.getTimeInMillis() - nearestBefore.getTimeInMillis();
+                long afterDiff = nearestAfter.getTimeInMillis() - ots.getTimeInMillis();
                
                 if(otsNoSecs.equals(nearestBefore) || ots.equals(nearestAfter)){
-                    adjustedTimestamp = new Timestamp(otsNoSecs.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(otsNoSecs.getTimeInMillis());
                     eventData = EVENT_DATA_NONE;
                 }
                 
                else if(beforeDiff < afterDiff){
-                    adjustedTimestamp = new Timestamp(nearestBefore.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(nearestBefore.getTimeInMillis());
                     eventData = EVENT_DATA_INTERVAL_ROUND;
                 }
                 else{
-                    adjustedTimestamp = new Timestamp(nearestAfter.getTime());
+                    adjustedTimestamp = new GregorianCalendar();
+                    adjustedTimestamp.setTimeInMillis(nearestAfter.getTimeInMillis());
                     eventData = EVENT_DATA_INTERVAL_ROUND;
                 }
             } 
@@ -240,8 +272,10 @@ public class Punch {
     public String printOriginalTimestamp(){
         
         String pt = this.PUNCH_TYPES[punchTypeId];
-        String dow = this.DAYS_OF_WEEK[originalTimestamp.getDay()];
-        String date = (new SimpleDateFormat(DATE_FORMAT)).format(originalTimestamp);
+        //String dow = this.DAYS_OF_WEEK[];
+        String dow = DAYS_OF_WEEK[originalTimestamp.get(Calendar.DAY_OF_WEEK) - 1];
+        
+        String date = (new SimpleDateFormat(DATE_FORMAT)).format(originalTimestamp.getTimeInMillis());
         
         String output = "#" + badge.getId() + " ";
         output+= pt + ": " + dow + " " + date;
@@ -251,8 +285,8 @@ public class Punch {
     }
     public String printAdjustedTimestamp(){
         String pt = this.PUNCH_TYPES[punchTypeId];
-        String dow = this.DAYS_OF_WEEK[adjustedTimestamp.getDay()];
-        String date = (new SimpleDateFormat(DATE_FORMAT)).format(adjustedTimestamp);
+        String dow = this.DAYS_OF_WEEK[adjustedTimestamp.get(Calendar.DAY_OF_WEEK) - 1];
+        String date = (new SimpleDateFormat(DATE_FORMAT)).format(adjustedTimestamp.getTimeInMillis());
         
         String output = "#" + badge.getId() + " ";
         output+= pt + ": " + dow + " " + date + " ";
@@ -286,11 +320,11 @@ public class Punch {
         return this.badge.getDescription();
     }
 
-    public Timestamp getOriginaltimestamp() {
+    public GregorianCalendar getOriginaltimestamp() {
         return originalTimestamp;
     }
 
-    public Timestamp getAdjustedtimestamp() {
+    public GregorianCalendar getAdjustedtimestamp() {
         return adjustedTimestamp;
     }
 
@@ -314,11 +348,11 @@ public class Punch {
         this.badge = badge;
     }
 
-    public void setOriginaltimestamp(Timestamp originalTimestamp) {
+    public void setOriginaltimestamp(GregorianCalendar originalTimestamp) {
         this.originalTimestamp = originalTimestamp;
     }
 
-    public void setAdjustedtimestamp(Timestamp adjustedTimeStamp) {
+    public void setAdjustedtimestamp(GregorianCalendar adjustedTimeStamp) {
         this.adjustedTimestamp = adjustedTimeStamp;
     }
 
