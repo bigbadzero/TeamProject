@@ -207,6 +207,9 @@ public class TASDatabase {
             
             ResultSet result = pst.executeQuery();
             while(result.next()){
+                
+                
+                
                 int scheduleId = result.getInt("dailyscheduleid");
                 int day = result.getInt("day");
                 
@@ -275,9 +278,10 @@ public class TASDatabase {
         //System.out.println("Day: " + day);
         //System.out.println(shift.getShiftLength(4));
         
-        
-        String sql = "SELECT *, UNIX_TIMESTAMP(`start`) AS `start`, UNIX_TIMESTAMP(`stop`) AS `stop`, "
-                + "UNIX_TIMESTAMP(`lunchstart`) AS `lunchstart`, UNIX_TIMESTAMP(`lunchstop`) AS `lunchstop` FROM dailyschedule WHERE id = ?;";
+        String sql = "SELECT `interval`, graceperiod,dock,lunchdeduct,\n" +
+"UNIX_TIMESTAMP(`start`) AS `start`, UNIX_TIMESTAMP(stop) AS stop,\n" +
+"UNIX_TIMESTAMP(lunchstart) AS lunchstart, UNIX_TIMESTAMP(lunchstop) AS lunchstop\n" +
+"FROM dailyschedule WHERE id = ?;";
         
         try{
             PreparedStatement pst = conn.prepareStatement(sql);
@@ -287,12 +291,15 @@ public class TASDatabase {
             //System.out.println("Update Schedule try");
             if(result.next()){
                 //System.out.println("Update Schedule if");
+                
+                
+                
                 GregorianCalendar start = new GregorianCalendar();
                 start.setTimeInMillis(result.getLong("start") * TASLogic.MILLIS_TO_SECS);
                 
+                
                 GregorianCalendar stop = new GregorianCalendar();
                 stop.setTimeInMillis(result.getLong("stop") * TASLogic.MILLIS_TO_SECS);
-                
                 
                 int interval = result.getInt("interval");
                 int graceperiod = result.getInt("graceperiod");
@@ -306,9 +313,6 @@ public class TASDatabase {
                 
                 
                 int lunchDeduct = result.getInt("lunchdeduct");
-                
-                System.out.println("ts: " +result.getLong("start") * TASLogic.MILLIS_TO_SECS);
-                System.out.println("DSI: " + dailyScheduleId);
                 
                 shift.setStart(day, start);
                 shift.setStop(day, stop);

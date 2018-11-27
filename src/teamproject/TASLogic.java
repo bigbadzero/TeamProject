@@ -46,7 +46,7 @@ public class TASLogic {
 
         
         long currentDayMillis = 0;
-        int currentDay = punchList.get(0).getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
+        int day = punchList.get(0).getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
         //boolean multipleDays = false;
         
         long lunchDeduct =0;
@@ -54,43 +54,52 @@ public class TASLogic {
         
         for(Punch p: punchList){
             
-            int day = p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
+            int currentDay = p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
             
             lunchDeduct = shift.getLunchDeduct(day) * TASLogic.MILLIS_TO_MIN;
             lunchLength = shift.getLunchLength(day) * TASLogic.MILLIS_TO_MIN;
             
-            //System.out.println(p.getOriginalformatteddate());
-            //System.out.println("LD: " + lunchDeduct/TASLogic.MILLIS_TO_MIN);
-            //System.out.println("LL: " + lunchLength/TASLogic.MILLIS_TO_MIN);
-            
             p.adjust(shift);
             
+            //System.out.println(p.printAdjustedTimestamp());
             
-            if(currentDay != p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK)){
-                currentDay = p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
+            if(currentDay != day){
                 
-                //multipleDays = true;
-                if(!lunchOut && !lunchIn){
+                //System.out.println("New Day");
+                day = currentDay;
+                
+                
+                //System.out.println("CDM: " + currentDayMillis);
+                
+                
+                if(!lunchOut || !lunchIn){
                     if(currentDayMillis> lunchDeduct){
-                        //System.out.println("Before deduct: " + totalMillis/MILLIS_TO_MIN);
                         totalMillis -= lunchLength;
-                        currentDayMillis = 0;
-                        //System.out.println("After Deduct: "+totalMillis/MILLIS_TO_MIN);
+                        
                         lunchOut = lunchIn = false;
                     }
                 }
+                currentDayMillis = 0;
             }
                     
             
             
             if(p.getPunchtypeid() == Punch.CLOCKED_IN && !inPair){
+                //System.out.println("Clock In");
                 previous = p;
                 inPair = true;
             }
-            else if(inPair){
+            
+            else if(inPair ){
+                
+                //System.out.println("In Pair");
+                
                 if(p.getPunchtypeid() == Punch.CLOCKED_OUT){
+                    
+                    //System.out.println("Clocked Out");
+                    
                     totalMillis += p.getAdjustedtimestamp().getTimeInMillis() - previous.getAdjustedtimestamp().getTimeInMillis();
-                    System.out.println("Mins: " + totalMillis/TASLogic.MILLIS_TO_MIN);
+                    //System.out.println("Mins: " + totalMillis/TASLogic.MILLIS_TO_MIN);
                     currentDayMillis += p.getAdjustedtimestamp().getTimeInMillis() - previous.getAdjustedtimestamp().getTimeInMillis();
                     inPair = false;
                 }
@@ -174,50 +183,6 @@ public class TASLogic {
         return punchListData;
     }
     public static double calculateAbsenteeism(ArrayList<Punch> punchList, Shift s){
-        /*double percentage = 0;
-        
-        int shiftLength = s.getShiftLength();
-        ArrayList<Integer> daysWorked = new ArrayList<>();
-        int maxNumDays = 5;
-        int previousDay = Integer.MIN_VALUE;
-        
-        double minutesRequired = 0;
-        
-        
-        
-        for(Punch p : punchList){
-            int currentDay = p.getAdjustedtimestamp().getDay();
-            if(currentDay != previousDay){
-                previousDay = currentDay;
-                daysWorked.add(currentDay);
-                
-            }
-        }
-        
-        for(int i = 0; i < daysWorked.size(); ++i){
-            int day = daysWorked.get(i);
-            
-            if(i< maxNumDays)
-                minutesRequired += s.getShiftLength(day);
-            
-        }
-        
-        double minutesWorked = calculateTotalMinutes(punchList,s);
-        
-        
-        
-        //System.out.println("MW: " + minutesWorked);
-        //System.out.println("MR: " + minutesRequired);
-        
-        if(minutesRequired > 0){
-            percentage = 100 - ((minutesWorked/minutesRequired)*100);
-        }
-        else{
-            
-        }
-        
-        
-        return percentage;  */
         
         double percentage = 0;
         
