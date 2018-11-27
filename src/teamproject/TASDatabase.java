@@ -208,7 +208,11 @@ public class TASDatabase {
             pst.setString(2, date);
             
             ResultSet result = pst.executeQuery();
+            
+            
             while(result.next()){
+                
+                
                 int scheduleId = result.getInt("dailyscheduleid");
                 int day = result.getInt("day");
                 
@@ -229,7 +233,7 @@ public class TASDatabase {
             
             ResultSet result = pst.executeQuery();
             while(result.next()){
-                int scheduleId = result.getInt("scheduleid");
+                int scheduleId = result.getInt("dailyscheduleid");
                 int day = result.getInt("day");
                 
                 this.updateDailySchedule(shift, scheduleId, day);
@@ -251,6 +255,9 @@ public class TASDatabase {
     
     public void updateDailySchedule(Shift shift, int dailyScheduleId, int day){
         
+        System.out.println("Day: " + day);
+        System.out.println(shift.getShiftLength(4));
+        
         String sql = "SELECT *, UNIX_TIMESTAMP(`start`) AS `start`, UNIX_TIMESTAMP(`stop`) AS `stop`, "
                 + "UNIX_TIMESTAMP(`lunchstart`) AS `lunchstart`, UNIX_TIMESTAMP(`lunchstop`) AS `lunchstop` FROM dailyschedule WHERE id = ?;";
         
@@ -259,8 +266,9 @@ public class TASDatabase {
             pst.setInt(1, dailyScheduleId);
             
             ResultSet result = pst.executeQuery();
-            
+            //System.out.println("Update Schedule try");
             if(result.next()){
+                //System.out.println("Update Schedule if");
                 Timestamp start = new Timestamp(result.getLong("start") * TASLogic.MILLIS_TO_SECS);
                 Timestamp stop = new Timestamp(result.getLong("stop") * TASLogic.MILLIS_TO_SECS);
                 int interval = result.getInt("interval");
@@ -283,6 +291,8 @@ public class TASDatabase {
             pst.close();
         }
         catch(Exception e){System.err.println(e.toString());}
+        
+        System.out.println(shift.getShiftLength(4));
         
         
     }

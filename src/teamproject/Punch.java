@@ -69,19 +69,27 @@ public class Punch {
         Timestamp ots = originalTimestamp;
         int day = originalTimestamp.getDay();
   
-        HashMap<String,Timestamp> shiftValues = s.getParticularShiftValues(ots);
+        /*HashMap<String,Timestamp> shiftValues = s.getParticularShiftValues(ots);
+        Timestamp shiftStart = shiftValues.get(Shift.SHIFT_START);
+        Timestamp lunchStart = shiftValues.get(Shift.LUNCH_START);
+        Timestamp lunchStop = shiftValues.get(Shift.LUNCH_STOP);
+        Timestamp shiftStop = shiftValues.get(Shift.SHIFT_STOP);*/
+        
+        
+        
+        HashMap<String,Timestamp> shiftValues = s.getParticularShiftValues(day,ots);
+        
         Timestamp shiftStart = shiftValues.get(Shift.SHIFT_START);
         Timestamp lunchStart = shiftValues.get(Shift.LUNCH_START);
         Timestamp lunchStop = shiftValues.get(Shift.LUNCH_STOP);
         Timestamp shiftStop = shiftValues.get(Shift.SHIFT_STOP);
 
-        
         if(day != shiftStart.getDay())
             day = shiftStart.getDay();
         
-        int interval = s.getInterval() * TASLogic.MILLIS_TO_MIN;
-        int gracePeriod = s.getGracePeriod() * TASLogic.MILLIS_TO_MIN;
-        int dock = s.getDock() * TASLogic.MILLIS_TO_MIN;  
+        int interval = s.getInterval(day) * TASLogic.MILLIS_TO_MIN;
+        int gracePeriod = s.getGracePeriod(day) * TASLogic.MILLIS_TO_MIN;
+        int dock = s.getDock(day) * TASLogic.MILLIS_TO_MIN;  
         
         Timestamp shiftStartEarly = new Timestamp(shiftStart.getTime() - interval);
         Timestamp shiftStartLate = new Timestamp(shiftStart.getTime() + interval);

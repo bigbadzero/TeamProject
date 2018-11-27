@@ -32,18 +32,30 @@ public class Shift {
         this.description = description;
         this.defaultschedule = defaultschedule;
         
+        
+        
         this.initScheduleList(defaultschedule);
        
     }
     
-    private void initScheduleList(DailySchedule defaultschedule){
+    private void initScheduleList(DailySchedule ds){
         scheduleList = new HashMap<>();
         
-        scheduleList.put(Calendar.MONDAY, defaultschedule);
-        scheduleList.put(Calendar.TUESDAY, defaultschedule);
-        scheduleList.put(Calendar.WEDNESDAY, defaultschedule);
-        scheduleList.put(Calendar.THURSDAY, defaultschedule);
-        scheduleList.put(Calendar.FRIDAY, defaultschedule);
+        DailySchedule monday = new DailySchedule(ds.getStart(),ds.getStop(),ds.getInterval(),ds.getGracePeriod(),ds.getDock(),ds.getLunchStart(),ds.getLunchStop(),ds.getLunchDeduct());
+        DailySchedule tuesday = new DailySchedule(ds.getStart(),ds.getStop(),ds.getInterval(),ds.getGracePeriod(),ds.getDock(),ds.getLunchStart(),ds.getLunchStop(),ds.getLunchDeduct());
+        DailySchedule wednesday = new DailySchedule(ds.getStart(),ds.getStop(),ds.getInterval(),ds.getGracePeriod(),ds.getDock(),ds.getLunchStart(),ds.getLunchStop(),ds.getLunchDeduct());
+        DailySchedule thursday = new DailySchedule(ds.getStart(),ds.getStop(),ds.getInterval(),ds.getGracePeriod(),ds.getDock(),ds.getLunchStart(),ds.getLunchStop(),ds.getLunchDeduct());
+        DailySchedule friday = new DailySchedule(ds.getStart(),ds.getStop(),ds.getInterval(),ds.getGracePeriod(),ds.getDock(),ds.getLunchStart(),ds.getLunchStop(),ds.getLunchDeduct());
+        DailySchedule saturday = new DailySchedule(ds.getStart(),ds.getStop(),ds.getInterval(),ds.getGracePeriod(),ds.getDock(),ds.getLunchStart(),ds.getLunchStop(),ds.getLunchDeduct());
+        DailySchedule sunday = new DailySchedule(ds.getStart(),ds.getStop(),ds.getInterval(),ds.getGracePeriod(),ds.getDock(),ds.getLunchStart(),ds.getLunchStop(),ds.getLunchDeduct());
+        
+        scheduleList.put(Calendar.MONDAY, monday);
+        scheduleList.put(Calendar.TUESDAY, tuesday);
+        scheduleList.put(Calendar.WEDNESDAY, wednesday);
+        scheduleList.put(Calendar.THURSDAY, thursday);
+        scheduleList.put(Calendar.FRIDAY, friday);
+        scheduleList.put(Calendar.SATURDAY, saturday);
+        scheduleList.put(Calendar.SUNDAY, sunday);
         
     }
     
@@ -51,9 +63,22 @@ public class Shift {
         
         return defaultschedule.toString(description);
     }
+    public void printWeeklySchedule(){
+        for(HashMap.Entry<Integer, DailySchedule> e: scheduleList.entrySet()){
+            System.out.println(e.getValue().toString(description));
+        }
+    }
     
     public HashMap<String,Timestamp> getParticularShiftValues(Timestamp ts){
         HashMap<String,Timestamp> shiftValues = defaultschedule.getParticularShiftValues(ts);
+        
+        return shiftValues;
+    }
+    
+    public HashMap<String,Timestamp> getParticularShiftValues(int day, Timestamp ts){
+        
+        DailySchedule dailySchedule = scheduleList.get(day);
+        HashMap<String,Timestamp> shiftValues = dailySchedule.getParticularShiftValues(ts); 
         
         return shiftValues;
     }
