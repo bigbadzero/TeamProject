@@ -378,7 +378,7 @@ public class TASDatabase {
         
   
         try{
-            PreparedStatement pst1 = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ?;"); 
+            PreparedStatement pst1 = conn.prepareStatement("SELECT id FROM punch WHERE badgeid = ? AND originaltimestamp LIKE ? ORDER BY originaltimestamp;"); 
             pst1.setString(1, badgeId);
             pst1.setString(2, date + "%"); 
             
