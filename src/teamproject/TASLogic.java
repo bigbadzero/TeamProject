@@ -56,6 +56,20 @@ public class TASLogic {
             
             int currentDay = p.getOriginaltimestamp().get(Calendar.DAY_OF_WEEK);
             
+            if(currentDay != day){
+                
+                //System.out.println("New Day");
+                day = currentDay;
+                //System.out.println("CDM: " + currentDayMillis);
+                if(!lunchOut || !lunchIn){
+                    if(currentDayMillis> lunchDeduct){
+                        totalMillis -= lunchLength;
+                    }
+                }
+                lunchOut = lunchIn = false;
+                currentDayMillis = 0;
+            }
+            
             lunchDeduct = shift.getLunchDeduct(day) * TASLogic.MILLIS_TO_MIN;
             lunchLength = shift.getLunchLength(day) * TASLogic.MILLIS_TO_MIN;
             
@@ -63,41 +77,16 @@ public class TASLogic {
             
             //System.out.println(p.printAdjustedTimestamp());
             
-            if(currentDay != day){
-                
-                //System.out.println("New Day");
-                day = currentDay;
-                
-                
-                //System.out.println("CDM: " + currentDayMillis);
-                
-                
-                if(!lunchOut || !lunchIn){
-                    if(currentDayMillis> lunchDeduct){
-                        totalMillis -= lunchLength;
-                        
-                        lunchOut = lunchIn = false;
-                    }
-                }
-                currentDayMillis = 0;
-            }
-                    
-            
-            
             if(p.getPunchtypeid() == Punch.CLOCKED_IN && !inPair){
                 //System.out.println("Clock In");
                 previous = p;
                 inPair = true;
             }
-            
             else if(inPair ){
                 
                 //System.out.println("In Pair");
-                
                 if(p.getPunchtypeid() == Punch.CLOCKED_OUT){
-                    
                     //System.out.println("Clocked Out");
-                    
                     totalMillis += p.getAdjustedtimestamp().getTimeInMillis() - previous.getAdjustedtimestamp().getTimeInMillis();
                     //System.out.println("Mins: " + totalMillis/TASLogic.MILLIS_TO_MIN);
                     currentDayMillis += p.getAdjustedtimestamp().getTimeInMillis() - previous.getAdjustedtimestamp().getTimeInMillis();
@@ -111,8 +100,6 @@ public class TASLogic {
                 lunchOut = true;
             else if(p.getEventdata().equals(Punch.EVENT_DATA_LUNCH_STOP))
                 lunchIn = true;
-            
-            
         }    
         
         if(!lunchOut && !lunchIn){
@@ -120,7 +107,6 @@ public class TASLogic {
                 totalMillis -= lunchLength;
         }
         
-    
         totalMinutes = (new Long(totalMillis/TASLogic.MILLIS_TO_MIN)).intValue();
         System.out.println("TM: " + totalMinutes);
         
@@ -129,7 +115,6 @@ public class TASLogic {
     
     public static GregorianCalendar forceXafterY(GregorianCalendar x, GregorianCalendar y){
         if(x.before(y)){
-            
             x.setTimeInMillis(x.getTimeInMillis() + 24*TASLogic.MILLIS_TO_HOURS);
         }
         
@@ -152,14 +137,12 @@ public class TASLogic {
         String absenteeismString = new DecimalFormat("#0.00").format(absenteeism) + "%";
         totalData.put("absenteeism", absenteeismString);
         
-        
         int totalMinutes = calculateTotalMinutes(punchList,s);
         totalData.put("totalminutes", String.valueOf(totalMinutes));
         jsonData.add(totalData);
         
         String json = JSONValue.toJSONString(jsonData);
         return json;
-        
     }
     public static ArrayList<HashMap<String,String>> getPunchListData(ArrayList<Punch> punchList){
         ArrayList<HashMap<String,String>> punchListData = new ArrayList<>();
@@ -185,20 +168,14 @@ public class TASLogic {
     public static double calculateAbsenteeism(ArrayList<Punch> punchList, Shift s){
         
         double percentage = 0;
-        
         int shiftLength = s.getShiftLength();
-        
         double minutesRequired = 0;
-        
         
         for(int i = Calendar.MONDAY; i < Calendar.SATURDAY; ++i){
             minutesRequired += s.getShiftLength(i);
         }
         
-        
         double minutesWorked = calculateTotalMinutes(punchList,s);
-        
-        
         
         //System.out.println("MW: " + minutesWorked);
         System.out.println("MR: " + minutesRequired);
@@ -206,12 +183,7 @@ public class TASLogic {
         if(minutesRequired > 0){
             percentage = 100 - ((minutesWorked/minutesRequired)*100);
         }
-        else{
-            
-        }
-        
         
         return percentage; 
-        
     }
 }

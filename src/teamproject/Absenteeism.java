@@ -36,7 +36,7 @@ public class Absenteeism {
     public String toString(){
         String output = "";
         String date = new SimpleDateFormat(DATE_FORMAT).format(payPeriod.getTimeInMillis());
-        String decimal = new DecimalFormat("#0.00").format(percentage);
+        String decimal = String.format("%.2f", percentage);
         
         output += "#" + badgeId;
         output += " (Pay Period Starting " + date + "): ";
