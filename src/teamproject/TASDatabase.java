@@ -438,7 +438,7 @@ public class TASDatabase {
         
         long payPeriodStart = Absenteeism.getPayPeriodStart(ts);
         String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(payPeriodStart);
-        System.out.println(date);
+        
         try{
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, badgeId);
