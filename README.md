@@ -1,5 +1,5 @@
 # TeamProject
-This program was written by Benjamin Watson, Bendan Roberts, Bryan Luna, and Brody Smith
+This program was written by Benjamin Watson, Bendan Roberts, Bryan Luna, Anthony Santiago, and Brody Smith
 
 This Project is designed to allow a company to implement a digital punch card system
 
